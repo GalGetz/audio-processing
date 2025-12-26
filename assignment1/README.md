@@ -14,7 +14,7 @@ assignment1/
 │   ├── part3/
 │   ├── part4/
 │   └── part5/
-├── main.py                 # Main runner script
+├── main.py
 ├── part1/
 │   ├── __init__.py
 │   ├── loading.py          # load_audio()
@@ -72,6 +72,7 @@ assignment1/
 2. **Stereo Handling:** If the audio has multiple channels, keep only the first channel (left).
 3. **Trimming:** Ensure the audio is exactly 10 seconds.
 4. **Output:** Print the native sampling frequency (Hz).
+   - **Answer:** The sampling frequency of the original audio is **44100 Hz**.
 
 ---
 

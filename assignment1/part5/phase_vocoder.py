@@ -24,7 +24,7 @@ def stft(
     hop_length : int
         Hop size in samples.
     window : np.ndarray
-        Window function (e.g., Hamming).
+        Window function (e.g., Hann).
         
     Returns
     -------
@@ -113,10 +113,9 @@ def phase_vocoder(
     hop_length: int
 ) -> np.ndarray:
     """
-    Apply phase vocoder for time-stretching (lecture-aligned).
+    Apply phase vocoder for time-stretching (improved implementation).
     
-    For rate > 1: speed up (fewer output frames)
-    For rate < 1: slow down (more output frames)
+    Uses proper instantaneous frequency estimation for better phase coherence.
     
     Parameters
     ----------
@@ -144,16 +143,33 @@ def phase_vocoder(
     # Output STFT
     output_stft = np.zeros((num_frames_out, num_bins), dtype=np.complex128)
     
-    # Initialize phase accumulator with first frame's phase
+    # Expected phase advance per hop for each frequency bin
+    # omega_k = 2 * pi * k / n_fft
+    n_fft = (num_bins - 1) * 2
+    freq_bins = np.arange(num_bins)
+    omega = 2 * np.pi * freq_bins / n_fft
+    expected_phase_advance = omega * hop_length
+    
+    # Compute instantaneous frequency for all input frames
+    # Phase difference between consecutive frames
+    phase_diff = np.diff(phase_in, axis=0)
+    
+    # Remove expected phase advance to get deviation
+    phase_deviation = phase_diff - expected_phase_advance[None, :]
+    
+    # Wrap to [-pi, pi]
+    phase_deviation = np.mod(phase_deviation + np.pi, 2 * np.pi) - np.pi
+    
+    # True instantaneous frequency = expected + deviation/hop
+    inst_freq = omega[None, :] + phase_deviation / hop_length
+    
+    # Initialize output phase with first input frame
     phase_acc = phase_in[0].copy()
     
-    # Expected phase advance per frame (for each frequency bin)
-    # omega_k = 2 * pi * k / n_fft, advance per hop = omega_k * hop_length
-    freq_bins = np.arange(num_bins)
-    n_fft = (num_bins - 1) * 2  # Infer n_fft from num_bins
-    expected_phase_advance = 2 * np.pi * freq_bins * hop_length / n_fft
+    # Output hop (in input frame units) 
+    output_hop = rate
     
-    # Sequential phase vocoder (inherently sequential due to phase accumulation)
+    # Sequential phase vocoder
     for t_out in range(num_frames_out):
         # Map output frame to input time (monotonic mapping)
         t_in = t_out * rate
@@ -165,23 +181,23 @@ def phase_vocoder(
         # Interpolation weight
         w = t_in - t0
         
-        # Magnitude interpolation (lecture: nearest neighbor + interpolation)
+        # Magnitude interpolation
         mag_out = (1 - w) * magnitude_in[t0] + w * magnitude_in[t1]
         
-        # Phase update (lecture-style accumulation)
         if t_out == 0:
             # First frame: use input phase directly
             phase_out = phase_in[t0]
+            phase_acc = phase_out.copy()
         else:
-            # Compute instantaneous frequency deviation
-            # phase_diff = angle(X[t1]) - angle(X[t0])
-            phase_diff = phase_in[t1] - phase_in[t0]
+            # Get instantaneous frequency at this input position
+            # Use the frame before t0 for the inst_freq (since inst_freq[i] is diff between frame i and i+1)
+            if t0 > 0:
+                inst_freq_interp = (1 - w) * inst_freq[t0 - 1] + w * inst_freq[min(t0, num_frames_in - 2)]
+            else:
+                inst_freq_interp = inst_freq[0]
             
-            # Wrap to [-pi, pi]
-            phase_diff = np.mod(phase_diff + np.pi, 2 * np.pi) - np.pi
-            
-            # Accumulate phase: add expected advance + deviation
-            phase_acc = phase_acc + expected_phase_advance + phase_diff
+            # Advance phase by output hop * instantaneous frequency
+            phase_acc = phase_acc + hop_length * inst_freq_interp
             phase_out = phase_acc
         
         # Recompose complex STFT
@@ -194,7 +210,7 @@ def time_stretch_phase_vocoder(
     audio: np.ndarray,
     sr: int,
     rate: float = 1.5,
-    win_ms: float = 20.0,
+    win_ms: float = 40.0,
     hop_ms: float = 10.0
 ) -> np.ndarray:
     """
@@ -209,9 +225,9 @@ def time_stretch_phase_vocoder(
     rate : float
         Time-stretch rate (1.5 = 1.5x speed, i.e. shorter output).
     win_ms : float
-        Window size in milliseconds.
+        Window size in milliseconds (default: 40ms for better freq resolution).
     hop_ms : float
-        Hop size in milliseconds.
+        Hop size in milliseconds (default: 10ms = 75% overlap with 40ms window).
         
     Returns
     -------
@@ -223,11 +239,14 @@ def time_stretch_phase_vocoder(
     n_fft = int(win_ms * sr / 1000)
     hop_length = int(hop_ms * sr / 1000)
     
-    # Use Hamming window (lecture default)
-    window = np.hamming(n_fft)
+    # Use Hann window (better for OLA reconstruction than Hamming)
+    window = np.hanning(n_fft)
+    
+    print(f"-> Window: {win_ms}ms ({n_fft} samples), Hop: {hop_ms}ms ({hop_length} samples)")
+    print(f"-> Overlap: {100 * (1 - hop_length/n_fft):.0f}%")
     
     # 5.a.ii: Apply STFT
-    print(f"-> Applying STFT (n_fft={n_fft}, hop={hop_length})...")
+    print(f"-> Applying STFT...")
     stft_complex = stft(audio, n_fft, hop_length, window)
     print(f"-> Input STFT shape: {stft_complex.shape}")
     
@@ -294,12 +313,12 @@ def plot_time_stretch_comparison(
     axes[0, 1].grid(True)
     
     # Spectrogram parameters
-    n_fft = int(0.02 * sr)  # 20ms
+    n_fft = int(0.04 * sr)  # 40ms
     hop_length = int(0.01 * sr)  # 10ms
     
     # Bottom-left: Original spectrogram
     f_orig, t_orig, Sxx_orig = signal.spectrogram(
-        original, fs=sr, nperseg=n_fft, noverlap=n_fft - hop_length, window='hamming'
+        original, fs=sr, nperseg=n_fft, noverlap=n_fft - hop_length, window='hann'
     )
     Sxx_orig_db = 10 * np.log10(Sxx_orig + 1e-10)
     axes[1, 0].pcolormesh(t_orig, f_orig, Sxx_orig_db, shading='gouraud', cmap='magma')
@@ -309,7 +328,7 @@ def plot_time_stretch_comparison(
     
     # Bottom-right: Stretched spectrogram
     f_str, t_str, Sxx_str = signal.spectrogram(
-        stretched, fs=sr, nperseg=n_fft, noverlap=n_fft - hop_length, window='hamming'
+        stretched, fs=sr, nperseg=n_fft, noverlap=n_fft - hop_length, window='hann'
     )
     Sxx_str_db = 10 * np.log10(Sxx_str + 1e-10)
     axes[1, 1].pcolormesh(t_str, f_str, Sxx_str_db, shading='gouraud', cmap='magma')
@@ -321,4 +340,3 @@ def plot_time_stretch_comparison(
     plt.savefig(output_filename)
     print(f"-> Saved plot to: {output_filename}")
     plt.close()
-

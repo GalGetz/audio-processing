@@ -185,29 +185,22 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
     
     # Time axis for audio plot
     time_audio = np.linspace(0, len(audio) / sr, num=len(audio))
-    
-    # Create figure
     fig, axes = plt.subplots(4, 1, figsize=(12, 16), sharex=True)
     fig.suptitle(title, fontsize=16)
     
-    # -------------------------------------------------------------------------
     # i. Audio Plot
-    # -------------------------------------------------------------------------
     axes[0].plot(time_audio, audio)
     axes[0].set_title("Audio Signal (Time Domain)")
     axes[0].set_ylabel("Amplitude")
     axes[0].grid(True)
     
-    # -------------------------------------------------------------------------
     # ii. Spectrogram + Pitch Contour
-    # -------------------------------------------------------------------------
     # Calculate spectrogram using scipy
     frequencies, times, spec = signal.spectrogram(audio, fs=sr, 
                                                  nperseg=n_fft, 
                                                  noverlap=n_fft - hop_length)
     
-    # Use log scale for better visualization
-    # Avoid log(0)
+    # Use log scale for better visualization and avoid log(0)
     spec_db = 10 * np.log10(spec + 1e-10)
     
     im = axes[1].pcolormesh(times, frequencies, spec_db, shading='gouraud', cmap='magma')
@@ -230,9 +223,7 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
     ax_pitch.tick_params(axis='y', labelcolor='cyan')
     ax_pitch.set_ylim(0, 600)
     
-    # -------------------------------------------------------------------------
     # iii. Mel-Spectrogram (using librosa)
-    # -------------------------------------------------------------------------
     n_mels = 128
     
     # Calculate Mel Spectrogram using librosa
@@ -248,19 +239,15 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
     axes[2].set_title(f"Mel-Spectrogram (librosa, {n_mels} mels)")
     axes[2].set_ylabel("Frequency [Hz] (Mel Scale)")
     
-    # -------------------------------------------------------------------------
-    # iv. Energy and RMS
-    # -------------------------------------------------------------------------
-    # Calculate RMS manually to avoid librosa dependency if needed
-    # We use the same hop_length and n_fft (window size)
-    rms = []
-    energy = []
-    for i in range(0, len(audio) - n_fft, hop_length):
-        window = audio[i : i + n_fft]
-        rms_val = np.sqrt(np.mean(window**2))
-        energy_val = np.sum(window**2)
-        rms.append(rms_val)
-        energy.append(energy_val)
+    # iv. Energy and RMS (Vectorized - no for loops!)
+    # Create frames using vectorized indexing
+    num_frames = 1 + (len(audio) - n_fft) // hop_length
+    indices = np.arange(n_fft)[None, :] + hop_length * np.arange(num_frames)[:, None]
+    frames = audio[indices]
+    
+    # Compute RMS and Energy for all frames at once
+    rms = np.sqrt(np.mean(frames**2, axis=1))
+    energy = np.sum(frames**2, axis=1)
     
     # Time axis for RMS/Energy
     time_rms = np.linspace(0, len(audio)/sr, num=len(rms))

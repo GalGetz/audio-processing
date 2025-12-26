@@ -103,8 +103,9 @@ def main():
     print("=" * 60)
     
     # Part 3.a: Voice Activity Detection using energy threshold
+    # Lower percentile = more frames classified as noise = better noise estimation
     energy, n_fft, hop_length = compute_frame_energy(noisy_audio, fs_16k)
-    is_speech, threshold = compute_vad_mask(energy, threshold_percentile=65.0)
+    is_speech, threshold = compute_vad_mask(energy, threshold_percentile=40.0)
     
     print(f"-> VAD: {is_speech.sum()} speech frames, {(~is_speech).sum()} noise frames")
     
@@ -112,7 +113,13 @@ def main():
     plot_vad_threshold(energy, threshold, fs_16k, hop_length, is_speech)
     
     # Part 3.b: Sequential spectral subtraction
-    enhanced_audio = spectral_subtraction(noisy_audio, is_speech, fs_16k)
+    # Aggressive parameters for maximum noise removal:
+    enhanced_audio = spectral_subtraction(
+        noisy_audio, is_speech, fs_16k,
+        alpha=0.98,   # high smoothing = stable noise estimate
+        beta=3.0,     # aggressive subtraction (3x noise magnitude)
+        floor=0.001   # very low floor for maximum suppression
+    )
     
     # Save enhanced audio
     sf.write(os.path.join(SCRIPT_DIR, "audio_enhanced.wav"), enhanced_audio, fs_16k)

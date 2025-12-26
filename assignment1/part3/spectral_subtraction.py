@@ -46,67 +46,77 @@ def spectral_subtraction(
     # Create Hann window
     window = np.hanning(n_fft)
     
-    # Vectorized framing
+    # Vectorized framing using advanced indexing
     num_frames = 1 + (len(noisy_audio) - n_fft) // hop_length
     indices = np.arange(n_fft)[None, :] + hop_length * np.arange(num_frames)[:, None]
     frames = noisy_audio[indices]
     
-    # Apply window to all frames
+    # Apply window to all frames (vectorized)
     windowed_frames = frames * window[None, :]
     
-    # Compute STFT (rFFT for real signals)
+    # Compute STFT - vectorized rFFT for all frames at once
     stft = np.fft.rfft(windowed_frames, axis=1)
     magnitude = np.abs(stft)
     phase = np.angle(stft)
     
     print(f"-> STFT computed: {num_frames} frames, {magnitude.shape[1]} frequency bins")
     
-    # Initialize noise magnitude estimate using first few non-speech frames
-    # Find initial noise frames (first N frames where is_speech is False)
+    # Initialize noise estimate from initial non-speech frames (vectorized)
     noise_frames_idx = np.where(~is_speech[:min(50, num_frames)])[0]
+    noise_mag = np.mean(magnitude[noise_frames_idx], axis=0)
+    print(f"-> Initialized noise estimate from {len(noise_frames_idx)} noise frames")
     
-    if len(noise_frames_idx) > 0:
-        noise_mag = np.mean(magnitude[noise_frames_idx], axis=0)
-        print(f"-> Initialized noise estimate from {len(noise_frames_idx)} noise frames")
-    else:
-        # Fallback: use first frame or minimum magnitude
-        noise_mag = magnitude[0].copy()
-        print("-> Warning: No initial noise frames found, using first frame")
-    
-    # Sequential spectral subtraction
-    enhanced_magnitude = np.zeros_like(magnitude)
+    # =========================================================================
+    # Sequential noise estimation (inherently sequential - each frame depends
+    # on the previous noise estimate, as required by the assignment)
+    # All per-frame operations are vectorized (no inner loops)
+    # =========================================================================
+    noise_estimates = np.zeros_like(magnitude)
     
     for t in range(num_frames):
-        # Update noise estimate only during non-speech frames
         if not is_speech[t]:
             noise_mag = alpha * noise_mag + (1 - alpha) * magnitude[t]
-        
-        # Spectral subtraction with flooring
-        # mag_enh = max(mag_t - beta * noise_mag, floor * noise_mag)
-        subtracted = magnitude[t] - beta * noise_mag
-        floored = floor * noise_mag
-        enhanced_magnitude[t] = np.maximum(subtracted, floored)
+        noise_estimates[t] = noise_mag
+    
+    print(f"-> Sequential noise estimation complete")
+    
+    # Spectral subtraction - fully vectorized across all frames and frequency bins
+    subtracted = magnitude - beta * noise_estimates
+    floored = floor * noise_estimates
+    enhanced_magnitude = np.maximum(subtracted, floored)
     
     print(f"-> Spectral subtraction applied to {num_frames} frames")
     
-    # Reconstruct using original phase
+    # Reconstruct using original phase (vectorized)
     enhanced_stft = enhanced_magnitude * np.exp(1j * phase)
     
-    # Inverse FFT
+    # Inverse FFT - vectorized across all frames
     enhanced_frames = np.fft.irfft(enhanced_stft, n=n_fft, axis=1)
     
-    # Overlap-add reconstruction
+    # Apply synthesis window (vectorized)
+    windowed_output = enhanced_frames * window[None, :]
+    
+    # =========================================================================
+    # Overlap-add reconstruction - vectorized using np.add.at
+    # =========================================================================
     output_length = (num_frames - 1) * hop_length + n_fft
-    enhanced_audio = np.zeros(output_length, dtype=np.float32)
-    window_sum = np.zeros(output_length, dtype=np.float32)
+    enhanced_audio = np.zeros(output_length, dtype=np.float64)
+    window_sum = np.zeros(output_length, dtype=np.float64)
     
-    for t in range(num_frames):
-        start = t * hop_length
-        end = start + n_fft
-        enhanced_audio[start:end] += enhanced_frames[t] * window
-        window_sum[start:end] += window ** 2
+    # Create index array for all frames (vectorized)
+    frame_starts = np.arange(num_frames) * hop_length
+    output_indices = frame_starts[:, None] + np.arange(n_fft)[None, :]
     
-    # Normalize by window sum (avoid division by zero)
+    # Flatten for np.add.at
+    flat_indices = output_indices.ravel()
+    flat_audio = windowed_output.ravel()
+    flat_window = np.tile(window ** 2, num_frames)
+    
+    # Vectorized overlap-add using np.add.at
+    np.add.at(enhanced_audio, flat_indices, flat_audio)
+    np.add.at(window_sum, flat_indices, flat_window)
+    
+    # Normalize by window sum (vectorized)
     window_sum = np.maximum(window_sum, 1e-8)
     enhanced_audio = enhanced_audio / window_sum
     
@@ -116,4 +126,3 @@ def spectral_subtraction(
     print(f"-> Overlap-add reconstruction complete: {len(enhanced_audio)} samples")
     
     return enhanced_audio.astype(np.float32)
-

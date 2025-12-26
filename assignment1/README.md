@@ -17,6 +17,10 @@ assignment1/
 ├── part2/
 │   ├── __init__.py
 │   └── noise.py            # load_and_resample_noise(), add_noise_to_audio(), plot_noise_addition()
+├── part3/
+│   ├── __init__.py
+│   ├── vad.py              # compute_frame_energy(), compute_vad_mask(), plot_vad_threshold()
+│   └── spectral_subtraction.py  # spectral_subtraction()
 ├── 10-sec-gal.wav          # Recording (10 seconds)
 └── stationary_noise.wav    # Noise file
 ```
@@ -150,3 +154,51 @@ The `scipy.signal.resample` version is superior.
 **Outputs:**
 - `part2_noise_addition.png` - 3-subplot visualization
 - `audio_noisy.wav` - The noisy audio file
+
+---
+
+## Part 3: Spectral Subtraction
+
+### Part 3.a: Voice Activity Detection (VAD)
+
+**Objective:** Find speech parts using a threshold on the energy level.
+
+**Implementation:** `part3/vad.py`
+
+1. **Frame Energy:** Compute energy per frame using vectorized framing (20ms window, 10ms hop).
+2. **Threshold:** Use percentile-based threshold (40th percentile) for robust speech/noise classification.
+3. **VAD Mask:** Frames with energy above threshold are classified as speech.
+4. **Plot:** Energy contour with threshold line overlay.
+
+---
+
+### Part 3.b: Sequential Spectral Subtraction
+
+**Objective:** For every time-frame, estimate noise and subtract it from the signal sequentially.
+
+**Implementation:** `part3/spectral_subtraction.py`
+
+1. **STFT:** Compute Short-Time Fourier Transform using Hann window.
+2. **Noise Estimation:** Initialize from non-speech frames, update sequentially with exponential smoothing:
+   - `noise_mag = alpha * noise_mag + (1-alpha) * current_mag` (only during non-speech)
+3. **Spectral Subtraction:** 
+   - `enhanced_mag = max(mag - beta * noise_mag, floor * noise_mag)`
+4. **Reconstruction:** Overlap-add with original phase.
+
+**Parameters:**
+- `alpha=0.98` - Noise smoothing (higher = more stable estimate)
+- `beta=3.0` - Subtraction factor (higher = more aggressive)
+- `floor=0.001` - Spectral floor (lower = more suppression)
+
+---
+
+### Part 3.c: Plot Enhanced Audio
+
+**Objective:** Visualize enhanced audio using the Part 1 plotting function.
+
+**Implementation:** Reuses `part1/visualization.py`
+
+**Outputs:**
+- `part3_vad_threshold.png` - Energy contour with VAD threshold
+- `audio_enhanced.wav` - Enhanced audio after spectral subtraction
+- `analysis_enhanced_(spectral_subtraction).png` - Full visualization of enhanced audio

@@ -311,9 +311,9 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Compute Short-Time Fourier Transform on the input audio.
 
-- Window: **Hamming** (lecture default)
-- Window size: 20ms
-- Hop size: 10ms
+- Window: **Hann** (optimal for OLA reconstruction)
+- Window size: **40ms** (better frequency resolution)
+- Hop size: **10ms** (75% overlap)
 - Vectorized framing using advanced indexing
 
 ---
@@ -322,17 +322,22 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Calculate magnitude and phase values for the output STFT.
 
-**Lecture-aligned algorithm:**
+**Improved algorithm with instantaneous frequency estimation:**
 
 1. **Magnitude Interpolation:**
    - `mag_out = (1-w) * |X[t0]| + w * |X[t1]|`
 
-2. **Phase Update (accumulation):**
-   - Compute phase difference: `phase_diff = angle(X[t1]) - angle(X[t0])`
-   - Wrap to [-pi, pi]
-   - Accumulate: `phase_out = phase_prev + expected_advance + phase_diff`
+2. **Instantaneous Frequency Estimation:**
+   - Compute expected phase advance: `omega = 2π * k * hop / n_fft`
+   - Compute phase deviation: `deviation = diff(phase) - omega`
+   - Wrap deviation to [-π, π]
+   - True instantaneous frequency: `inst_freq = omega + deviation / hop`
 
-3. **Recompose:**
+3. **Phase Accumulation:**
+   - Interpolate instantaneous frequency at output position
+   - Accumulate: `phase_out = phase_prev + hop * inst_freq_interp`
+
+4. **Recompose:**
    - `Y[t_out] = mag_out * exp(1j * phase_out)`
 
 ---
@@ -343,6 +348,7 @@ The `scipy.signal.resample` version is superior.
 
 - Inverse rFFT per frame
 - Overlap-add reconstruction (vectorized using `np.add.at`)
+- Normalized by squared window sum (COLA constraint)
 - Output `np.float32`
 
 ---
@@ -356,6 +362,27 @@ The `scipy.signal.resample` version is superior.
 - Top-right: Stretched waveform
 - Bottom-left: Original spectrogram
 - Bottom-right: Stretched spectrogram
+
+---
+
+### Quality Improvements
+
+Phase vocoders can produce "metallic" or "phasey" artifacts. The following improvements were applied:
+
+| Parameter | Initial | Improved | Reason |
+|-----------|---------|----------|--------|
+| Window size | 20ms | **40ms** | Better frequency resolution reduces smearing |
+| Overlap | 50% | **75%** | Smoother transitions between frames |
+| Window type | Hamming | **Hann** | Better sidelobe suppression for OLA |
+| Phase logic | Simple diff | **Instantaneous frequency** | Proper phase coherence |
+
+**Instantaneous Frequency Approach:**
+- Instead of directly adding phase differences, we compute the *instantaneous frequency* (deviation from expected phase advance)
+- Interpolate instantaneous frequency at output time positions
+- Accumulate phase as: `phase += hop × instantaneous_freq`
+- This maintains better phase coherence across frequency bins
+
+**Note:** Some residual artifacts are inherent to phase vocoders. More advanced techniques (peak-locking, harmonic-percussive separation) exist but are beyond the assignment scope.
 
 **Outputs:**
 - `audio_speedx1p5.wav` - Time-stretched audio (1.5x speed, pitch preserved)

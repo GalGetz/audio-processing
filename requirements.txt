@@ -3,4 +3,5 @@ scipy
 librosa
 matplotlib
 praat-parselmouth
+soundfile
 

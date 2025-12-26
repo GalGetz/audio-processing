@@ -21,6 +21,9 @@ assignment1/
 │   ├── __init__.py
 │   ├── vad.py              # compute_frame_energy(), compute_vad_mask(), plot_vad_threshold()
 │   └── spectral_subtraction.py  # spectral_subtraction()
+├── part4/
+│   ├── __init__.py
+│   └── agc.py              # compute_frame_rms_db(), compute_agc_gains(), apply_agc(), soft_clip_sigmoid(), plot_gain_curve()
 ├── 10-sec-gal.wav          # Recording (10 seconds)
 └── stationary_noise.wav    # Noise file
 ```
@@ -96,7 +99,6 @@ assignment1/
 2. **Subplots:**
    - **Audio:** Time-domain waveform.
    - **Spectrogram:** Frequency-domain representation (0 to Fmax) with pitch contour overlay (Praat/Parselmouth).
-   - **Mel-Spectrogram:** Perceptual frequency scale (librosa).
    - **Mel-Spectrogram:** Perceptual frequency scale (librosa).
    - **Energy and RMS:** Temporal evolution of loudness (vectorized NumPy).
 
@@ -206,3 +208,75 @@ The `scipy.signal.resample` version is superior.
 - `part3_vad_threshold.png` - Energy contour with VAD threshold
 - `audio_enhanced.wav` - Enhanced audio after spectral subtraction
 - `analysis_enhanced_(spectral_subtraction).png` - Full visualization of enhanced audio
+
+---
+
+## Part 4: Auto Gain Control (AGC)
+
+### Part 4.a.i: Determine Desired RMS
+
+**Objective:** Set the target RMS level in dB for AGC normalization.
+
+**Implementation:** `part4/agc.py`
+
+- Compute per-frame RMS in dB
+- Identify speech frames (frames above noise floor)
+- Set `desired_rms_db` as **75th percentile** of RMS over speech frames
+
+---
+
+### Part 4.a.ii: Determine Noise Floor Threshold
+
+**Objective:** Set the noise floor to avoid amplifying noise.
+
+**Implementation:** `part4/agc.py`
+
+- Set `noise_floor_db` as **20th percentile** of RMS (global)
+- Frames below noise floor will have gain limited to <= 0 dB (no amplification)
+
+---
+
+### Part 4.a.iii: Sequential Gain Computation
+
+**Objective:** For every time-frame, compute gain using ~1s statistics window.
+
+**Implementation:** `part4/agc.py`
+
+1. **Running Statistics:** Maintain a ring buffer of ~100 frames (~1s at 10ms hop)
+2. **Target Gain:** `target_gain_db = desired_rms_db - running_rms_stat_db`
+3. **Noise Floor Gating:** If frame RMS < noise floor, limit gain to <= 0 dB
+4. **Attack/Release Smoothing:** Sequential exponential smoothing
+   - Fast attack (gain decreasing): `coef=0.1`
+   - Slow release (gain increasing): `coef=0.01`
+
+---
+
+### Part 4.a.iv: Overflow Prevention
+
+**Objective:** Avoid clipping after gain application.
+
+**Implementation:** `part4/agc.py`
+
+- Apply soft clipping using `tanh`: `y = tanh(drive * x) / tanh(drive)`
+- Ensures output stays in (-1, 1) range without hard clipping artifacts
+
+---
+
+### Part 4.a.v: Plot AGC Output
+
+**Objective:** Visualize AGC-processed audio using the Part 1 plotting function.
+
+**Implementation:** Reuses `part1/visualization.py`
+
+---
+
+### Part 4.a.vi: Plot Scaling Factors
+
+**Objective:** Plot the AGC gain curve over time.
+
+**Implementation:** `part4/agc.py`
+
+**Outputs:**
+- `audio_agc.wav` - AGC-processed audio
+- `part4_agc_gains.png` - Gain (dB) vs time plot
+- `analysis_agc_output_(16khz).png` - Full visualization of AGC output

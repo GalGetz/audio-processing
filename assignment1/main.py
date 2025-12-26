@@ -29,6 +29,15 @@ from part3 import (
     spectral_subtraction,
 )
 
+from part4 import (
+    compute_frame_rms_db,
+    estimate_agc_params,
+    compute_agc_gains,
+    apply_agc,
+    soft_clip_sigmoid,
+    plot_gain_curve,
+)
+
 
 def main():
     """Main execution function."""
@@ -127,6 +136,50 @@ def main():
     
     # Part 3.c: Plot enhanced audio using Part 1 visualization function
     plot_audio_analysis(enhanced_audio, fs_16k, "Enhanced (Spectral Subtraction)")
+    
+    # =========================================================================
+    # PART 4: Auto Gain Control (AGC)
+    # =========================================================================
+    
+    print("\n" + "=" * 60)
+    print("PART 4: Auto Gain Control (AGC)")
+    print("=" * 60)
+    
+    # Part 4.a.i & 4.a.ii: Compute RMS and determine desired RMS & noise floor
+    print("\n--- Part 4.a.i & 4.a.ii: Computing RMS and AGC Parameters ---")
+    rms, rms_db, n_fft_agc, hop_length_agc = compute_frame_rms_db(audio_16k_resampled, fs_16k)
+    
+    # Estimate AGC parameters: desired RMS (75th percentile of speech) and noise floor (20th percentile)
+    desired_rms_db, noise_floor_db = estimate_agc_params(rms_db)
+    
+    print(f"-> Desired RMS (target): {desired_rms_db:.2f} dB")
+    print(f"-> Noise floor threshold: {noise_floor_db:.2f} dB")
+    
+    # Part 4.a.iii: Compute sequential AGC gains with ~1s window and attack/release
+    gains_db = compute_agc_gains(
+        rms_db, 
+        desired_rms_db, 
+        noise_floor_db,
+        stats_window_frames=100,  # ~1s at 10ms hop
+        attack_coef=0.1,          # fast attack
+        release_coef=0.01         # slow release
+    )
+    
+    # Apply gains to audio
+    agc_audio = apply_agc(audio_16k_resampled, gains_db, n_fft_agc, hop_length_agc)
+    
+    # Part 4.a.iv: Soft clip to avoid overflow
+    agc_audio = soft_clip_sigmoid(agc_audio, drive=1.0)
+    
+    # Save AGC audio
+    sf.write(os.path.join(SCRIPT_DIR, "audio_agc.wav"), agc_audio, fs_16k)
+    print("\n-> Saved AGC audio to: audio_agc.wav")
+    
+    # Part 4.a.v: Plot AGC output using Part 1 visualization function
+    plot_audio_analysis(agc_audio, fs_16k, "AGC Output (16kHz)")
+    
+    # Part 4.a.vi: Plot scaling factors vs time
+    plot_gain_curve(gains_db, fs_16k, hop_length_agc)
     
     print("\n" + "=" * 60)
     print("Assignment 1 Complete!")

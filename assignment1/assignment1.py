@@ -270,6 +270,166 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
 
 
 # =============================================================================
+# Part 2.a: Load and Resample Noise
+# =============================================================================
+
+def load_and_resample_noise(file_path: str, target_sr: int) -> tuple[np.ndarray, int]:
+    """
+    Load a noise audio file and resample it to the target sampling rate.
+    
+    Parameters
+    ----------
+    file_path : str
+        Path to the noise audio file.
+    target_sr : int
+        Target sampling rate in Hz.
+        
+    Returns
+    -------
+    noise : np.ndarray
+        Resampled noise signal as np.float32.
+    native_sr : int
+        Original sampling rate of the noise file.
+    """
+    print("\n--- Part 2.a: Loading and Resampling Noise ---")
+    
+    # Verify file exists
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Noise file not found: {file_path}")
+    
+    # Load noise with native sampling rate
+    noise_2d, native_sr = sf.read(file_path, dtype="float32", always_2d=True)
+    
+    # Convert to mono if stereo
+    if noise_2d.shape[1] > 1:
+        noise = noise_2d[:, 0]
+        print(f"-> Converted noise to mono (from {noise_2d.shape[1]} channels).")
+    else:
+        noise = noise_2d[:, 0]
+    
+    print(f"-> Noise native sampling rate: {native_sr} Hz")
+    print(f"-> Noise duration: {len(noise) / native_sr:.2f}s ({len(noise)} samples)")
+    
+    # Resample to target sampling rate
+    if native_sr != target_sr:
+        num_samples_target = int(len(noise) * target_sr / native_sr)
+        noise_resampled = signal.resample(noise, num_samples_target).astype(np.float32)
+        print(f"-> Resampled noise from {native_sr} Hz to {target_sr} Hz.")
+        print(f"-> New noise length: {len(noise_resampled)} samples")
+    else:
+        noise_resampled = noise.astype(np.float32)
+        print(f"-> Noise already at target rate ({target_sr} Hz).")
+    
+    return noise_resampled, native_sr
+
+
+# =============================================================================
+# Part 2.b: Add Noise to Audio
+# =============================================================================
+
+def add_noise_to_audio(audio: np.ndarray, noise: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Add noise to audio signal, handling length mismatch by truncation.
+    
+    Parameters
+    ----------
+    audio : np.ndarray
+        Clean audio signal.
+    noise : np.ndarray
+        Noise signal.
+        
+    Returns
+    -------
+    audio_truncated : np.ndarray
+        Audio signal (possibly truncated to match noise length).
+    noise_truncated : np.ndarray
+        Noise signal (possibly truncated to match audio length).
+    noisy_audio : np.ndarray
+        Sum of audio and noise.
+    """
+    print("\n--- Part 2.b: Adding Noise to Audio ---")
+    
+    # Handle length mismatch
+    audio_len = len(audio)
+    noise_len = len(noise)
+    
+    if audio_len == noise_len:
+        print(f"-> Audio and noise have same length ({audio_len} samples).")
+        audio_truncated = audio
+        noise_truncated = noise
+    elif noise_len > audio_len:
+        print(f"-> Noise ({noise_len}) longer than audio ({audio_len}). Truncating noise.")
+        noise_truncated = noise[:audio_len]
+        audio_truncated = audio
+    else:
+        print(f"-> Audio ({audio_len}) longer than noise ({noise_len}). Truncating audio.")
+        audio_truncated = audio[:noise_len]
+        noise_truncated = noise
+    
+    # Add noise using '+' operator
+    noisy_audio = (audio_truncated + noise_truncated).astype(np.float32)
+    
+    print(f"-> Final length: {len(noisy_audio)} samples")
+    
+    return audio_truncated, noise_truncated, noisy_audio
+
+
+# =============================================================================
+# Part 2.c: Plot Noise Addition
+# =============================================================================
+
+def plot_noise_addition(audio: np.ndarray, noise: np.ndarray, noisy: np.ndarray, sr: int):
+    """
+    Plot clean audio, noise, and noisy audio signals.
+    
+    Parameters
+    ----------
+    audio : np.ndarray
+        Clean audio signal.
+    noise : np.ndarray
+        Noise signal.
+    noisy : np.ndarray
+        Noisy audio signal (audio + noise).
+    sr : int
+        Sampling rate in Hz.
+    """
+    print("\n--- Part 2.c: Plotting Audio, Noise, and Noisy Signals ---")
+    
+    # Time axis (all signals have same length after truncation)
+    time = np.linspace(0, len(audio) / sr, num=len(audio))
+    
+    fig, axes = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
+    fig.suptitle("Part 2: Noise Addition", fontsize=16)
+    
+    # Plot 1: Clean Audio
+    axes[0].plot(time, audio, color='blue')
+    axes[0].set_title("Clean Audio (from Q1.c.2)")
+    axes[0].set_ylabel("Amplitude")
+    axes[0].grid(True)
+    
+    # Plot 2: Noise
+    axes[1].plot(time, noise, color='red')
+    axes[1].set_title("Stationary Noise (resampled to 16kHz)")
+    axes[1].set_ylabel("Amplitude")
+    axes[1].grid(True)
+    
+    # Plot 3: Noisy Audio
+    axes[2].plot(time, noisy, color='purple')
+    axes[2].set_title("Noisy Audio (Clean + Noise)")
+    axes[2].set_ylabel("Amplitude")
+    axes[2].set_xlabel("Time [sec]")
+    axes[2].grid(True)
+    
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    
+    # Save the figure
+    output_filename = "part2_noise_addition.png"
+    plt.savefig(output_filename)
+    print(f"-> Saved plot to: {output_filename}")
+    plt.close()
+
+
+# =============================================================================
 # Main Execution
 # =============================================================================
 
@@ -303,4 +463,23 @@ if __name__ == "__main__":
     print(f"Naive Downsampled (1.c.i.1): {fs_16k} Hz, {len(audio_16k_naive)} samples")
     print(f"Scipy Resampled (1.c.i.2): {fs_16k} Hz, {len(audio_16k_resampled)} samples")
     print(f"Duration: {len(audio_16k_resampled) / fs_16k:.2f} seconds")
+    
+    # =========================================================================
+    # Part 2: Adding Noise
+    # =========================================================================
+    NOISE_FILE = "stationary_noise.wav"
+    NOISE_PATH = os.path.join(SCRIPT_DIR, NOISE_FILE)
+    
+    # Part 2.a: Load and resample noise to 16kHz
+    noise_16k, noise_native_sr = load_and_resample_noise(NOISE_PATH, fs_16k)
+    
+    # Part 2.b: Add noise to audio from Q1.c.2 (scipy resampled)
+    audio_clean, noise_truncated, noisy_audio = add_noise_to_audio(audio_16k_resampled, noise_16k)
+    
+    # Part 2.c: Plot the signals
+    plot_noise_addition(audio_clean, noise_truncated, noisy_audio, fs_16k)
+    
+    # Save the noisy audio
+    sf.write(os.path.join(SCRIPT_DIR, "audio_noisy.wav"), noisy_audio, fs_16k)
+    print("\n-> Saved noisy audio to: audio_noisy.wav")
 

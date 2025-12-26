@@ -22,6 +22,13 @@ from part2 import (
     plot_noise_addition,
 )
 
+from part3 import (
+    compute_frame_energy,
+    compute_vad_mask,
+    plot_vad_threshold,
+    spectral_subtraction,
+)
+
 
 def main():
     """Main execution function."""
@@ -87,6 +94,33 @@ def main():
     sf.write(os.path.join(SCRIPT_DIR, "audio_noisy.wav"), noisy_audio, fs_16k)
     print("\n-> Saved noisy audio to: audio_noisy.wav")
     
+    # =========================================================================
+    # PART 3: Spectral Subtraction
+    # =========================================================================
+    
+    print("\n" + "=" * 60)
+    print("PART 3: Spectral Subtraction")
+    print("=" * 60)
+    
+    # Part 3.a: Voice Activity Detection using energy threshold
+    energy, n_fft, hop_length = compute_frame_energy(noisy_audio, fs_16k)
+    is_speech, threshold = compute_vad_mask(energy, threshold_percentile=65.0)
+    
+    print(f"-> VAD: {is_speech.sum()} speech frames, {(~is_speech).sum()} noise frames")
+    
+    # Plot VAD threshold over energy contour
+    plot_vad_threshold(energy, threshold, fs_16k, hop_length, is_speech)
+    
+    # Part 3.b: Sequential spectral subtraction
+    enhanced_audio = spectral_subtraction(noisy_audio, is_speech, fs_16k)
+    
+    # Save enhanced audio
+    sf.write(os.path.join(SCRIPT_DIR, "audio_enhanced.wav"), enhanced_audio, fs_16k)
+    print("\n-> Saved enhanced audio to: audio_enhanced.wav")
+    
+    # Part 3.c: Plot enhanced audio using Part 1 visualization function
+    plot_audio_analysis(enhanced_audio, fs_16k, "Enhanced (Spectral Subtraction)")
+    
     print("\n" + "=" * 60)
     print("Assignment 1 Complete!")
     print("=" * 60)
@@ -94,4 +128,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

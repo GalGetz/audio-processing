@@ -131,6 +131,16 @@ The `scipy.signal.resample` version is superior.
 - `outputs/part1/analysis_naive_downsampling.png` - Visualization (naive)
 - `outputs/part1/analysis_scipy_resample.png` - Visualization (scipy)
 
+#### Figures
+
+**Naive downsampling (16kHz):**
+
+![](outputs/part1/analysis_naive_downsampling.png)
+
+**Scipy resample (16kHz):**
+
+![](outputs/part1/analysis_scipy_resample.png)
+
 ---
 
 ## Part 2: Adding Noise
@@ -155,6 +165,10 @@ The `scipy.signal.resample` version is superior.
 **Outputs:**
 - `outputs/part2/part2_noise_addition.png` - 3-subplot visualization
 - `outputs/part2/audio_noisy.wav` - The noisy audio file
+
+#### Figure
+
+![](outputs/part2/part2_noise_addition.png)
 
 ---
 
@@ -191,6 +205,16 @@ The `scipy.signal.resample` version is superior.
 - `outputs/part3/part3_vad_threshold.png` - Energy contour with VAD threshold
 - `outputs/part3/audio_enhanced.wav` - Enhanced audio after spectral subtraction
 - `outputs/part3/analysis_enhanced.png` - Full visualization of enhanced audio
+
+#### Figures
+
+**VAD threshold over energy:**
+
+![](outputs/part3/part3_vad_threshold.png)
+
+**Enhanced audio analysis (spectral subtraction):**
+
+![](outputs/part3/analysis_enhanced.png)
 
 ---
 
@@ -247,6 +271,16 @@ The `scipy.signal.resample` version is superior.
 - `outputs/part4/audio_agc.wav` - AGC-processed audio
 - `outputs/part4/part4_agc_gains.png` - Gain (dB) vs time plot
 - `outputs/part4/analysis_agc_output.png` - Full visualization of AGC output
+
+#### Figures
+
+**AGC output analysis:**
+
+![](outputs/part4/analysis_agc_output.png)
+
+**AGC gain curve (dB) vs time:**
+
+![](outputs/part4/part4_agc_gains.png)
 
 ---
 
@@ -323,3 +357,7 @@ Phase vocoders can produce "metallic" or "phasey" artifacts. The following impro
 **Outputs:**
 - `outputs/part5/audio_speedx1p5.wav` - Time-stretched audio
 - `outputs/part5/part5_time_stretch.png` - Time and spectral domain comparison
+
+#### Figure
+
+![](outputs/part5/part5_time_stretch.png)

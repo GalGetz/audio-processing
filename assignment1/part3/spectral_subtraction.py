@@ -7,9 +7,9 @@ def spectral_subtraction(
     sr: int,
     win_ms: float = 20.0,
     hop_ms: float = 10.0,
-    alpha: float = 0.95,
     beta: float = 1.0,
-    floor: float = 0.05
+    floor: float = 0.05,
+    noise_buffer_frames: int = 50,
 ) -> np.ndarray:
     """
     Apply sequential spectral subtraction to enhance noisy audio.
@@ -26,12 +26,13 @@ def spectral_subtraction(
         Window size in milliseconds (default: 20ms).
     hop_ms : float
         Hop size in milliseconds (default: 10ms).
-    alpha : float
-        Smoothing factor for noise estimation (default: 0.95).
     beta : float
         Subtraction factor (default: 1.0).
     floor : float
         Spectral floor to prevent negative values (default: 0.05).
+    noise_buffer_frames : int
+        Noise footprint buffer size in frames (default: 50). Only non-speech frames
+        are pushed into this buffer; the noise estimate is the average of the buffer.
         
     Returns
     -------
@@ -63,19 +64,46 @@ def spectral_subtraction(
     
     # Initialize noise estimate from initial non-speech frames (vectorized)
     noise_frames_idx = np.where(~is_speech[:min(50, num_frames)])[0]
-    noise_mag = np.mean(magnitude[noise_frames_idx], axis=0)
+    if len(noise_frames_idx) > 0:
+        noise_mag = np.mean(magnitude[noise_frames_idx], axis=0)
+    else:
+        noise_mag = np.zeros(magnitude.shape[1], dtype=magnitude.dtype)
     print(f"-> Initialized noise estimate from {len(noise_frames_idx)} noise frames")
     
     # =========================================================================
-    # Sequential noise estimation (inherently sequential - each frame depends
-    # on the previous noise estimate, as required by the assignment)
-    # All per-frame operations are vectorized (no inner loops)
+    # Sequential noise estimation (lecture-aligned):
+    # - Aggregate non-speech frames into a fixed-size buffer
+    # - Average the buffer to form the noise footprint
+    # This is inherently sequential (buffer updates over time), but all per-frame
+    # operations are vectorized (no inner loops over frequency bins).
     # =========================================================================
     noise_estimates = np.zeros_like(magnitude)
-    
+
+    n_buf = max(int(noise_buffer_frames), 1)
+    # Ring buffer of noise magnitudes (only filled with non-speech frames)
+    noise_buf = np.zeros((n_buf, magnitude.shape[1]), dtype=magnitude.dtype)
+    buf_sum = np.zeros(magnitude.shape[1], dtype=magnitude.dtype)
+    buf_count = 0
+    buf_pos = 0
+
     for t in range(num_frames):
         if not is_speech[t]:
-            noise_mag = alpha * noise_mag + (1 - alpha) * magnitude[t]
+            mag_t = magnitude[t]
+            if buf_count < n_buf:
+                noise_buf[buf_pos] = mag_t
+                buf_sum += mag_t
+                buf_count += 1
+            else:
+                # Replace oldest entry (ring buffer)
+                buf_sum -= noise_buf[buf_pos]
+                noise_buf[buf_pos] = mag_t
+                buf_sum += mag_t
+
+            buf_pos = (buf_pos + 1) % n_buf
+
+            # Average buffer to estimate noise footprint
+            noise_mag = buf_sum / float(buf_count)
+
         noise_estimates[t] = noise_mag
     
     print(f"-> Sequential noise estimation complete")

@@ -116,9 +116,9 @@ def main():
     # Aggressive parameters for maximum noise removal:
     enhanced_audio = spectral_subtraction(
         noisy_audio, is_speech, fs_16k,
-        alpha=0.98,   # high smoothing = stable noise estimate
-        beta=3.0,     # aggressive subtraction (3x noise magnitude)
-        floor=0.001   # very low floor for maximum suppression
+        beta=3.0,              # aggressive subtraction (3x noise magnitude)
+        floor=0.001,           # very low floor for maximum suppression
+        noise_buffer_frames=50 # lecture-style noise footprint buffer size
     )
     
     # Save enhanced audio

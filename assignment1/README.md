@@ -184,16 +184,15 @@ The `scipy.signal.resample` version is superior.
 **Implementation:** `part3/spectral_subtraction.py`
 
 1. **STFT:** Compute Short-Time Fourier Transform using Hann window.
-2. **Noise Estimation:** Initialize from non-speech frames, update sequentially with exponential smoothing:
-   - `noise_mag = alpha * noise_mag + (1-alpha) * current_mag` (only during non-speech)
+2. **Noise Estimation (lecture-aligned):** Collect non-speech frames into a **fixed-size buffer** and estimate the noise footprint as the **average of that buffer**.
 3. **Spectral Subtraction:** 
    - `enhanced_mag = max(mag - beta * noise_mag, floor * noise_mag)`
 4. **Reconstruction:** Overlap-add with original phase.
 
 **Parameters:**
-- `alpha=0.98` - Noise smoothing (higher = more stable estimate)
 - `beta=3.0` - Subtraction factor (higher = more aggressive)
 - `floor=0.001` - Spectral floor (lower = more suppression)
+- `noise_buffer_frames=50` - Noise footprint buffer size (in frames)
 
 ---
 

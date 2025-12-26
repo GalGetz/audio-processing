@@ -69,9 +69,8 @@ assignment1/
 **Implementation:** `part1/loading.py`
 
 1. **Loading:** Use `soundfile.read()` with `dtype="float32"` to preserve the original sampling rate.
-2. **Stereo Handling:** If the audio has multiple channels, keep only the first channel (left).
-3. **Trimming:** Ensure the audio is exactly 10 seconds.
-4. **Output:** Print the native sampling frequency (Hz).
+2. **Stereo Handling:** If the audio has multiple channels, keep only the first channel.
+3. **Output:** Print the native sampling frequency (Hz).
    - **Answer:** The sampling frequency of the original audio is **44100 Hz**.
 
 ---
@@ -80,22 +79,14 @@ assignment1/
 
 **Objective:** Change the sampling rate of the signal to 32kHz.
 
-**Implementation:** `part1/resampling.py`
-
-1. **Method:** Use `scipy.signal.resample`.
-2. **Type Casting:** Ensure the audio signal is cast to `np.float32`.
-3. **Calculation:** Determine the target number of samples based on the ratio of the target rate (32kHz) to the native rate.
-
 ---
 
 ### Part 1.c: Downsample to 16kHz
 
 **Objective:** Downsample the 32kHz audio to 16kHz using two different methods and compare them.
 
-**Implementation:** `part1/resampling.py`
-
-1. **Method 1 (Naive Decimation):** Select every even sample (index 0, 2, 4...) from the 32kHz signal.
-2. **Method 2 (Scipy Resample):** Use `scipy.signal.resample` to resample from 32kHz to 16kHz.
+1. **Method 1 (Naive):** Select every even sample (index 0, 2, 4...).
+2. **Method 2 (Scipy Resample):** Using `scipy.signal.resample`.
 
 ---
 
@@ -110,9 +101,9 @@ assignment1/
    - **Audio:** Time-domain waveform.
    - **Spectrogram:** Frequency-domain representation (0 to Fmax) with pitch contour overlay (Praat/Parselmouth).
    - **Mel-Spectrogram:** Perceptual frequency scale (librosa).
-   - **Energy and RMS:** Temporal evolution of loudness (vectorized NumPy).
+   - **Energy and RMS:** Temporal evolution of loudness (NumPy).
 
-**Analysis: Missing Timeframes in Pitch Contour**
+**Missing Timeframes in Pitch Contour**
 
 Some timeframes may be missing (gaps in the cyan line) because:
 - The signal in those frames is **unvoiced** (silence or fricatives like /s/, /f/).
@@ -130,7 +121,7 @@ The `scipy.signal.resample` version is superior.
 - **Aliasing:** Naive decimation (taking every 2nd sample) violates Nyquist if the signal has frequencies above 8kHz. These fold back as distortion.
 - **Anti-aliasing:** `scipy.signal.resample` uses an FFT-based approach that effectively prevents aliasing.
 
-**Lecture-aligned parameter choices:**
+**Parameter choices:**
 - **Spectrogram/STFT window:** Hamming
 - **Mel filterbank size:** 80 mels (typical 40–80 @ 16kHz)
 
@@ -148,17 +139,11 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Load `stationary_noise.wav` and resample to 16kHz.
 
-**Implementation:** `part2/noise.py`
-
 ---
 
 ### Part 2.b: Add Noise to Audio
 
 **Objective:** Add noise to the clean audio from Part 1.c.2 using the `+` operator.
-
-**Implementation:** `part2/noise.py`
-
-- Handles length mismatch by truncation (shorter signal determines final length).
 
 ---
 
@@ -166,7 +151,6 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Visualize clean audio, noise, and noisy audio.
 
-**Implementation:** `part2/noise.py`
 
 **Outputs:**
 - `outputs/part2/part2_noise_addition.png` - 3-subplot visualization
@@ -180,10 +164,8 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Find speech parts using a threshold on the energy level.
 
-**Implementation:** `part3/vad.py`
-
 1. **Frame Energy:** Compute energy per frame using vectorized framing (20ms window, 10ms hop).
-2. **Threshold:** Use percentile-based threshold (40th percentile) for robust speech/noise classification.
+2. **Threshold:** Using percentile-based threshold (40th percentile).
 3. **VAD Mask:** Frames with energy above threshold are classified as speech.
 4. **Plot:** Energy contour with threshold line overlay.
 
@@ -193,26 +175,17 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** For every time-frame, estimate noise and subtract it from the signal sequentially.
 
-**Implementation:** `part3/spectral_subtraction.py`
-
 1. **STFT:** Compute Short-Time Fourier Transform using Hann window.
-2. **Noise Estimation (lecture-aligned):** Collect non-speech frames into a **fixed-size buffer** and estimate the noise footprint as the **average of that buffer**.
+2. **Noise Estimation:** Collect non-speech frames into a **fixed-size buffer** and estimate the noise footprint as the **average of that buffer**.
 3. **Spectral Subtraction:** 
    - `enhanced_mag = max(mag - beta * noise_mag, floor * noise_mag)`
 4. **Reconstruction:** Overlap-add with original phase.
-
-**Parameters:**
-- `beta=3.0` - Subtraction factor (higher = more aggressive)
-- `floor=0.001` - Spectral floor (lower = more suppression)
-- `noise_buffer_frames=50` - Noise footprint buffer size (in frames)
 
 ---
 
 ### Part 3.c: Plot Enhanced Audio
 
 **Objective:** Visualize enhanced audio using the Part 1 plotting function.
-
-**Implementation:** Reuses `part1/visualization.py`
 
 **Outputs:**
 - `outputs/part3/part3_vad_threshold.png` - Energy contour with VAD threshold
@@ -227,8 +200,6 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Set the target RMS level in dB for AGC normalization.
 
-**Implementation:** `part4/agc.py`
-
 - Compute per-frame RMS in dB
 - Identify speech frames (frames above noise floor)
 - Set `desired_rms_db` as **75th percentile** of RMS over speech frames
@@ -236,10 +207,6 @@ The `scipy.signal.resample` version is superior.
 ---
 
 ### Part 4.a.ii: Determine Noise Floor Threshold
-
-**Objective:** Set the noise floor to avoid amplifying noise.
-
-**Implementation:** `part4/agc.py`
 
 - Set `noise_floor_db` as **20th percentile** of RMS (global)
 - Frames below noise floor will have gain limited to <= 0 dB (no amplification)
@@ -250,22 +217,16 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** For every time-frame, compute gain using ~1s statistics window.
 
-**Implementation:** `part4/agc.py`
-
 1. **Running Statistics:** Maintain a ring buffer of ~100 frames (~1s at 10ms hop)
 2. **Target Gain:** `target_gain_db = desired_rms_db - running_rms_stat_db`
 3. **Noise Floor Gating:** If frame RMS < noise floor, limit gain to <= 0 dB
 4. **Attack/Release Smoothing:** Sequential exponential smoothing
-   - Fast attack (gain decreasing): `coef=0.1`
-   - Slow release (gain increasing): `coef=0.01`
 
 ---
 
 ### Part 4.a.iv: Overflow Prevention
 
 **Objective:** Avoid clipping after gain application.
-
-**Implementation:** `part4/agc.py`
 
 - Apply soft clipping using `tanh`: `y = tanh(drive * x) / tanh(drive)`
 - Ensures output stays in (-1, 1) range without hard clipping artifacts
@@ -276,15 +237,11 @@ The `scipy.signal.resample` version is superior.
 
 **Objective:** Visualize AGC-processed audio using the Part 1 plotting function.
 
-**Implementation:** Reuses `part1/visualization.py`
-
 ---
 
 ### Part 4.a.vi: Plot Scaling Factors
 
 **Objective:** Plot the AGC gain curve over time.
-
-**Implementation:** `part4/agc.py`
 
 **Outputs:**
 - `outputs/part4/audio_agc.wav` - AGC-processed audio
@@ -298,8 +255,6 @@ The `scipy.signal.resample` version is superior.
 ### Part 5.a: Overview
 
 **Objective:** Increase the speed of the audio from Q1.c.2 by a factor of x1.5 while **preserving pitch** using a **phase vocoder** algorithm.
-
-**Implementation:** `part5/phase_vocoder.py`
 
 ---
 
@@ -321,31 +276,12 @@ The `scipy.signal.resample` version is superior.
 - Window: **Hann** (optimal for OLA reconstruction)
 - Window size: **40ms** (better frequency resolution)
 - Hop size: **10ms** (75% overlap)
-- Vectorized framing using advanced indexing
 
 ---
 
 ### Part 5.a.iii: Magnitude and Phase Computation
 
 **Objective:** Calculate magnitude and phase values for the output STFT.
-
-**Improved algorithm with instantaneous frequency estimation:**
-
-1. **Magnitude Interpolation:**
-   - `mag_out = (1-w) * |X[t0]| + w * |X[t1]|`
-
-2. **Instantaneous Frequency Estimation:**
-   - Compute expected phase advance: `omega = 2π * k * hop / n_fft`
-   - Compute phase deviation: `deviation = diff(phase) - omega`
-   - Wrap deviation to [-π, π]
-   - True instantaneous frequency: `inst_freq = omega + deviation / hop`
-
-3. **Phase Accumulation:**
-   - Interpolate instantaneous frequency at output position
-   - Accumulate: `phase_out = phase_prev + hop * inst_freq_interp`
-
-4. **Recompose:**
-   - `Y[t_out] = mag_out * exp(1j * phase_out)`
 
 ---
 
@@ -354,8 +290,8 @@ The `scipy.signal.resample` version is superior.
 **Objective:** Reconstruct time-stretched audio from the modified STFT.
 
 - Inverse rFFT per frame
-- Overlap-add reconstruction (vectorized using `np.add.at`)
-- Normalized by squared window sum (COLA constraint)
+- Overlap-add reconstruction
+- Normalized by squared window sum 
 - Output `np.float32`
 
 ---
@@ -383,19 +319,6 @@ Phase vocoders can produce "metallic" or "phasey" artifacts. The following impro
 | Window type | Hamming | **Hann** | Better sidelobe suppression for OLA |
 | Phase logic | Simple diff | **Instantaneous frequency** | Proper phase coherence |
 | Volume | Unnormalized | **RMS Normalized** | Fixes low volume after time-stretching |
-
-**Instantaneous Frequency Approach:**
-- Instead of directly adding phase differences, we compute the *instantaneous frequency* (deviation from expected phase advance)
-- Interpolate instantaneous frequency at output time positions
-- Accumulate phase as: `phase += hop × instantaneous_freq`
-- This maintains better phase coherence across frequency bins
-
-**RMS Normalization:**
-- Calculate RMS of original input and stretched output
-- Apply gain to output to match input loudness: `output *= (input_rms / output_rms)`
-- Ensures the output volume is audible and consistent with the input
-
-**Note:** Some residual artifacts are inherent to phase vocoders. More advanced techniques (peak-locking, harmonic-percussive separation) exist but are beyond the assignment scope.
 
 **Outputs:**
 - `outputs/part5/audio_speedx1p5.wav` - Time-stretched audio

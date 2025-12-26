@@ -8,6 +8,7 @@ Main runner script that executes all parts of the assignment.
 
 import os
 import soundfile as sf
+import numpy as np
 
 from part1 import (
     load_audio,
@@ -54,6 +55,17 @@ def main():
     AUDIO_PATH = os.path.join(SCRIPT_DIR, AUDIO_FILE)
     NOISE_PATH = os.path.join(SCRIPT_DIR, NOISE_FILE)
     
+    # Output Directories
+    OUTPUT_DIR = os.path.join(SCRIPT_DIR, "outputs")
+    PART1_DIR = os.path.join(OUTPUT_DIR, "part1")
+    PART2_DIR = os.path.join(OUTPUT_DIR, "part2")
+    PART3_DIR = os.path.join(OUTPUT_DIR, "part3")
+    PART4_DIR = os.path.join(OUTPUT_DIR, "part4")
+    PART5_DIR = os.path.join(OUTPUT_DIR, "part5")
+    
+    for d in [PART1_DIR, PART2_DIR, PART3_DIR, PART4_DIR, PART5_DIR]:
+        os.makedirs(d, exist_ok=True)
+    
     print("=" * 60)
     print("ASSIGNMENT 1: Audio Processing")
     print("=" * 60)
@@ -61,6 +73,10 @@ def main():
     # =========================================================================
     # PART 1: Audio Loading, Resampling, and Visualization
     # =========================================================================
+    
+    print("\n" + "-" * 60)
+    print("PART 1: Audio Loading, Resampling, and Visualization")
+    print("-" * 60)
     
     # Part 1.a: Load the audio
     audio, fs = load_audio(AUDIO_PATH)
@@ -72,20 +88,26 @@ def main():
     audio_16k_naive, audio_16k_resampled, fs_16k = downsample_to_16k(audio_32k)
     
     # Part 1.d: Visualization
-    plot_audio_analysis(audio_16k_naive, fs_16k, "Naive Downsampling (16kHz)")
-    plot_audio_analysis(audio_16k_resampled, fs_16k, "Scipy Resample (16kHz)")
+    plot_audio_analysis(
+        audio_16k_naive, 
+        fs_16k, 
+        "Naive Downsampling (16kHz)",
+        output_path=os.path.join(PART1_DIR, "analysis_naive_downsampling.png")
+    )
+    plot_audio_analysis(
+        audio_16k_resampled, 
+        fs_16k, 
+        "Scipy Resample (16kHz)",
+        output_path=os.path.join(PART1_DIR, "analysis_scipy_resample.png")
+    )
     
-    # Part 1.e: Save audio files for listening comparison
-    sf.write(os.path.join(SCRIPT_DIR, "audio_16k_naive.wav"), audio_16k_naive, fs_16k)
-    sf.write(os.path.join(SCRIPT_DIR, "audio_16k_resampled.wav"), audio_16k_resampled, fs_16k)
-    print("\n-> Saved 16kHz audio files for comparison.")
+    # Part 1.e: Save audio files
+    sf.write(os.path.join(PART1_DIR, "audio_16k_naive.wav"), audio_16k_naive, fs_16k)
+    sf.write(os.path.join(PART1_DIR, "audio_16k_resampled.wav"), audio_16k_resampled, fs_16k)
+    print("\n-> Saved 16kHz audio files to outputs/part1/")
     
-    print("\n--- Part 1 Summary ---")
     print(f"Original Audio: {fs} Hz, {len(audio)} samples")
     print(f"Resampled Audio (1.b): {fs_32k} Hz, {len(audio_32k)} samples")
-    print(f"Naive Downsampled (1.c.i.1): {fs_16k} Hz, {len(audio_16k_naive)} samples")
-    print(f"Scipy Resampled (1.c.i.2): {fs_16k} Hz, {len(audio_16k_resampled)} samples")
-    print(f"Duration: {len(audio_16k_resampled) / fs_16k:.2f} seconds")
     
     # =========================================================================
     # PART 2: Adding Noise
@@ -102,11 +124,17 @@ def main():
     audio_clean, noise_truncated, noisy_audio = add_noise_to_audio(audio_16k_resampled, noise_16k)
     
     # Part 2.c: Plot the signals
-    plot_noise_addition(audio_clean, noise_truncated, noisy_audio, fs_16k)
+    plot_noise_addition(
+        audio_clean, 
+        noise_truncated, 
+        noisy_audio, 
+        fs_16k,
+        output_path=os.path.join(PART2_DIR, "part2_noise_addition.png")
+    )
     
     # Save the noisy audio
-    sf.write(os.path.join(SCRIPT_DIR, "audio_noisy.wav"), noisy_audio, fs_16k)
-    print("\n-> Saved noisy audio to: audio_noisy.wav")
+    sf.write(os.path.join(PART2_DIR, "audio_noisy.wav"), noisy_audio, fs_16k)
+    print("\n-> Saved noisy audio to: outputs/part2/audio_noisy.wav")
     
     # =========================================================================
     # PART 3: Spectral Subtraction
@@ -117,17 +145,22 @@ def main():
     print("=" * 60)
     
     # Part 3.a: Voice Activity Detection using energy threshold
-    # Lower percentile = more frames classified as noise = better noise estimation
     energy, n_fft, hop_length = compute_frame_energy(noisy_audio, fs_16k)
     is_speech, threshold = compute_vad_mask(energy, threshold_percentile=40.0)
     
     print(f"-> VAD: {is_speech.sum()} speech frames, {(~is_speech).sum()} noise frames")
     
     # Plot VAD threshold over energy contour
-    plot_vad_threshold(energy, threshold, fs_16k, hop_length, is_speech)
+    plot_vad_threshold(
+        energy, 
+        threshold, 
+        fs_16k, 
+        hop_length, 
+        is_speech,
+        output_path=os.path.join(PART3_DIR, "part3_vad_threshold.png")
+    )
     
     # Part 3.b: Sequential spectral subtraction
-    # Aggressive parameters for maximum noise removal:
     enhanced_audio = spectral_subtraction(
         noisy_audio, is_speech, fs_16k,
         beta=3.0,              # aggressive subtraction (3x noise magnitude)
@@ -136,11 +169,16 @@ def main():
     )
     
     # Save enhanced audio
-    sf.write(os.path.join(SCRIPT_DIR, "audio_enhanced.wav"), enhanced_audio, fs_16k)
-    print("\n-> Saved enhanced audio to: audio_enhanced.wav")
+    sf.write(os.path.join(PART3_DIR, "audio_enhanced.wav"), enhanced_audio, fs_16k)
+    print("\n-> Saved enhanced audio to: outputs/part3/audio_enhanced.wav")
     
-    # Part 3.c: Plot enhanced audio using Part 1 visualization function
-    plot_audio_analysis(enhanced_audio, fs_16k, "Enhanced (Spectral Subtraction)")
+    # Part 3.c: Plot enhanced audio
+    plot_audio_analysis(
+        enhanced_audio, 
+        fs_16k, 
+        "Enhanced (Spectral Subtraction)",
+        output_path=os.path.join(PART3_DIR, "analysis_enhanced.png")
+    )
     
     # =========================================================================
     # PART 4: Auto Gain Control (AGC)
@@ -160,7 +198,7 @@ def main():
     print(f"-> Desired RMS (target): {desired_rms_db:.2f} dB")
     print(f"-> Noise floor threshold: {noise_floor_db:.2f} dB")
     
-    # Part 4.a.iii: Compute sequential AGC gains with ~1s window and attack/release
+    # Part 4.a.iii: Compute sequential AGC gains
     gains_db = compute_agc_gains(
         rms_db, 
         desired_rms_db, 
@@ -177,14 +215,24 @@ def main():
     agc_audio = soft_clip_sigmoid(agc_audio, drive=1.0)
     
     # Save AGC audio
-    sf.write(os.path.join(SCRIPT_DIR, "audio_agc.wav"), agc_audio, fs_16k)
-    print("\n-> Saved AGC audio to: audio_agc.wav")
+    sf.write(os.path.join(PART4_DIR, "audio_agc.wav"), agc_audio, fs_16k)
+    print("\n-> Saved AGC audio to: outputs/part4/audio_agc.wav")
     
-    # Part 4.a.v: Plot AGC output using Part 1 visualization function
-    plot_audio_analysis(agc_audio, fs_16k, "AGC Output (16kHz)")
+    # Part 4.a.v: Plot AGC output
+    plot_audio_analysis(
+        agc_audio, 
+        fs_16k, 
+        "AGC Output (16kHz)",
+        output_path=os.path.join(PART4_DIR, "analysis_agc_output.png")
+    )
     
     # Part 4.a.vi: Plot scaling factors vs time
-    plot_gain_curve(gains_db, fs_16k, hop_length_agc)
+    plot_gain_curve(
+        gains_db, 
+        fs_16k, 
+        hop_length_agc,
+        output_path=os.path.join(PART4_DIR, "part4_agc_gains.png")
+    )
     
     # =========================================================================
     # PART 5: Time-Stretching with Phase Vocoder
@@ -201,16 +249,21 @@ def main():
     )
     
     # Save stretched audio
-    sf.write(os.path.join(SCRIPT_DIR, "audio_speedx1p5.wav"), stretched_audio, fs_16k)
-    print(f"\n-> Saved time-stretched audio to: audio_speedx1p5.wav")
+    sf.write(os.path.join(PART5_DIR, "audio_speedx1p5.wav"), stretched_audio, fs_16k)
+    print(f"\n-> Saved time-stretched audio to: outputs/part5/audio_speedx1p5.wav")
     
     # 5.a.v: Plot time and spectral domain comparison
     plot_time_stretch_comparison(
-        audio_16k_resampled, stretched_audio, fs_16k, TIME_STRETCH_RATE
+        audio_16k_resampled, 
+        stretched_audio, 
+        fs_16k, 
+        TIME_STRETCH_RATE,
+        output_path=os.path.join(PART5_DIR, "part5_time_stretch.png")
     )
     
     print("\n" + "=" * 60)
     print("Assignment 1 Complete!")
+    print(f"All outputs saved to: {OUTPUT_DIR}")
     print("=" * 60)
 
 

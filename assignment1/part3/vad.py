@@ -70,7 +70,14 @@ def compute_vad_mask(energy: np.ndarray, threshold_percentile: float = 65.0) -> 
     return is_speech, threshold
 
 
-def plot_vad_threshold(energy: np.ndarray, threshold: float, sr: int, hop_length: int, is_speech: np.ndarray = None):
+def plot_vad_threshold(
+    energy: np.ndarray, 
+    threshold: float, 
+    sr: int, 
+    hop_length: int, 
+    is_speech: np.ndarray = None,
+    output_path: str = "part3_vad_threshold.png"
+):
     """
     Plot energy contour with threshold line overlay.
     
@@ -86,6 +93,8 @@ def plot_vad_threshold(energy: np.ndarray, threshold: float, sr: int, hop_length
         Hop size in samples.
     is_speech : np.ndarray, optional
         VAD mask to highlight speech regions.
+    output_path : str
+        Path to save the figure.
     """
     print("\n--- Part 3.a: Plotting VAD Threshold ---")
     
@@ -114,8 +123,7 @@ def plot_vad_threshold(energy: np.ndarray, threshold: float, sr: int, hop_length
     
     plt.tight_layout()
     
-    output_filename = "part3_vad_threshold.png"
-    plt.savefig(output_filename)
-    print(f"-> Saved plot to: {output_filename}")
+    plt.savefig(output_path)
+    print(f"-> Saved plot to: {output_path}")
     plt.close()
 

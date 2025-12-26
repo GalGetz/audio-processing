@@ -288,7 +288,7 @@ def plot_gain_curve(
     gains_db: np.ndarray,
     sr: int,
     hop_length: int,
-    output_filename: str = "part4_agc_gains.png"
+    output_path: str = "part4_agc_gains.png"
 ):
     """
     Plot AGC scaling factors vs time.
@@ -301,8 +301,8 @@ def plot_gain_curve(
         Sampling rate in Hz.
     hop_length : int
         Hop size in samples.
-    output_filename : str
-        Output filename for the plot.
+    output_path : str
+        Output path for the plot.
     """
     print("\n--- Part 4.a.vi: Plotting AGC Gains ---")
     
@@ -321,7 +321,7 @@ def plot_gain_curve(
     ax.grid(True)
     
     plt.tight_layout()
-    plt.savefig(output_filename)
-    print(f"-> Saved plot to: {output_filename}")
+    plt.savefig(output_path)
+    print(f"-> Saved plot to: {output_path}")
     plt.close()
 

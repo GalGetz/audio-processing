@@ -8,6 +8,12 @@ Advanced Topics in Audio Processing using Deep Learning
 
 ```
 assignment1/
+├── outputs/                # Generated outputs organized by part
+│   ├── part1/
+│   ├── part2/
+│   ├── part3/
+│   ├── part4/
+│   └── part5/
 ├── main.py                 # Main runner script
 ├── part1/
 │   ├── __init__.py
@@ -128,10 +134,10 @@ The `scipy.signal.resample` version is superior.
 - **Mel filterbank size:** 80 mels (typical 40–80 @ 16kHz)
 
 **Outputs:**
-- `audio_16k_naive.wav` - Naive downsampled audio
-- `audio_16k_resampled.wav` - Scipy resampled audio
-- `analysis_naive_downsampling_(16khz).png` - Visualization (naive)
-- `analysis_scipy_resample_(16khz).png` - Visualization (scipy)
+- `outputs/part1/audio_16k_naive.wav` - Naive downsampled audio
+- `outputs/part1/audio_16k_resampled.wav` - Scipy resampled audio
+- `outputs/part1/analysis_naive_downsampling.png` - Visualization (naive)
+- `outputs/part1/analysis_scipy_resample.png` - Visualization (scipy)
 
 ---
 
@@ -162,8 +168,8 @@ The `scipy.signal.resample` version is superior.
 **Implementation:** `part2/noise.py`
 
 **Outputs:**
-- `part2_noise_addition.png` - 3-subplot visualization
-- `audio_noisy.wav` - The noisy audio file
+- `outputs/part2/part2_noise_addition.png` - 3-subplot visualization
+- `outputs/part2/audio_noisy.wav` - The noisy audio file
 
 ---
 
@@ -208,9 +214,9 @@ The `scipy.signal.resample` version is superior.
 **Implementation:** Reuses `part1/visualization.py`
 
 **Outputs:**
-- `part3_vad_threshold.png` - Energy contour with VAD threshold
-- `audio_enhanced.wav` - Enhanced audio after spectral subtraction
-- `analysis_enhanced_(spectral_subtraction).png` - Full visualization of enhanced audio
+- `outputs/part3/part3_vad_threshold.png` - Energy contour with VAD threshold
+- `outputs/part3/audio_enhanced.wav` - Enhanced audio after spectral subtraction
+- `outputs/part3/analysis_enhanced.png` - Full visualization of enhanced audio
 
 ---
 
@@ -280,9 +286,9 @@ The `scipy.signal.resample` version is superior.
 **Implementation:** `part4/agc.py`
 
 **Outputs:**
-- `audio_agc.wav` - AGC-processed audio
-- `part4_agc_gains.png` - Gain (dB) vs time plot
-- `analysis_agc_output_(16khz).png` - Full visualization of AGC output
+- `outputs/part4/audio_agc.wav` - AGC-processed audio
+- `outputs/part4/part4_agc_gains.png` - Gain (dB) vs time plot
+- `outputs/part4/analysis_agc_output.png` - Full visualization of AGC output
 
 ---
 
@@ -375,6 +381,7 @@ Phase vocoders can produce "metallic" or "phasey" artifacts. The following impro
 | Overlap | 50% | **75%** | Smoother transitions between frames |
 | Window type | Hamming | **Hann** | Better sidelobe suppression for OLA |
 | Phase logic | Simple diff | **Instantaneous frequency** | Proper phase coherence |
+| Volume | Unnormalized | **RMS Normalized** | Fixes low volume after time-stretching |
 
 **Instantaneous Frequency Approach:**
 - Instead of directly adding phase differences, we compute the *instantaneous frequency* (deviation from expected phase advance)
@@ -382,8 +389,13 @@ Phase vocoders can produce "metallic" or "phasey" artifacts. The following impro
 - Accumulate phase as: `phase += hop × instantaneous_freq`
 - This maintains better phase coherence across frequency bins
 
+**RMS Normalization:**
+- Calculate RMS of original input and stretched output
+- Apply gain to output to match input loudness: `output *= (input_rms / output_rms)`
+- Ensures the output volume is audible and consistent with the input
+
 **Note:** Some residual artifacts are inherent to phase vocoders. More advanced techniques (peak-locking, harmonic-percussive separation) exist but are beyond the assignment scope.
 
 **Outputs:**
-- `audio_speedx1p5.wav` - Time-stretched audio (1.5x speed, pitch preserved)
-- `part5_time_stretch.png` - Time and spectral domain comparison
+- `outputs/part5/audio_speedx1p5.wav` - Time-stretched audio
+- `outputs/part5/part5_time_stretch.png` - Time and spectral domain comparison

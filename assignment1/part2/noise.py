@@ -105,7 +105,7 @@ def add_noise_to_audio(audio: np.ndarray, noise: np.ndarray) -> tuple[np.ndarray
     return audio_truncated, noise_truncated, noisy_audio
 
 
-def plot_noise_addition(audio: np.ndarray, noise: np.ndarray, noisy: np.ndarray, sr: int):
+def plot_noise_addition(audio: np.ndarray, noise: np.ndarray, noisy: np.ndarray, sr: int, output_path: str = "part2_noise_addition.png"):
     """
     Plot clean audio, noise, and noisy audio signals.
     
@@ -119,6 +119,8 @@ def plot_noise_addition(audio: np.ndarray, noise: np.ndarray, noisy: np.ndarray,
         Noisy audio signal (audio + noise).
     sr : int
         Sampling rate in Hz.
+    output_path : str
+        Path to save the figure.
     """
     print("\n--- Part 2.c: Plotting Audio, Noise, and Noisy Signals ---")
     
@@ -150,8 +152,7 @@ def plot_noise_addition(audio: np.ndarray, noise: np.ndarray, noisy: np.ndarray,
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     
     # Save the figure
-    output_filename = "part2_noise_addition.png"
-    plt.savefig(output_filename)
-    print(f"-> Saved plot to: {output_filename}")
+    plt.savefig(output_path)
+    print(f"-> Saved plot to: {output_path}")
     plt.close()
 

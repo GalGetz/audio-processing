@@ -263,6 +263,15 @@ def time_stretch_phase_vocoder(
     print(f"-> Original length: {len(audio)} samples ({len(audio)/sr:.2f}s)")
     print(f"-> Stretched length: {len(stretched)} samples ({len(stretched)/sr:.2f}s)")
     
+    # Normalize Volume (RMS matching) to fix low volume issue
+    input_rms = np.sqrt(np.mean(audio**2))
+    output_rms = np.sqrt(np.mean(stretched**2))
+    
+    if output_rms > 1e-6:
+        gain_adjustment = input_rms / output_rms
+        stretched = stretched * gain_adjustment
+        print(f"-> Applied RMS normalization (gain adjustment: x{gain_adjustment:.2f})")
+    
     return stretched
 
 
@@ -271,7 +280,7 @@ def plot_time_stretch_comparison(
     stretched: np.ndarray,
     sr: int,
     rate: float,
-    output_filename: str = "part5_time_stretch.png"
+    output_path: str = "part5_time_stretch.png"
 ):
     """
     Plot original vs time-stretched audio in time and spectral domains.
@@ -286,8 +295,8 @@ def plot_time_stretch_comparison(
         Sampling rate in Hz.
     rate : float
         Time-stretch rate used.
-    output_filename : str
-        Output filename for the plot.
+    output_path : str
+        Output path for the plot.
     """
     print(f"\n--- Part 5.a.v: Plotting Time-Stretch Comparison ---")
     
@@ -337,6 +346,6 @@ def plot_time_stretch_comparison(
     axes[1, 1].set_ylabel("Frequency [Hz]")
     
     plt.tight_layout()
-    plt.savefig(output_filename)
-    print(f"-> Saved plot to: {output_filename}")
+    plt.savefig(output_path)
+    print(f"-> Saved plot to: {output_path}")
     plt.close()

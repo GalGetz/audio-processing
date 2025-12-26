@@ -9,7 +9,7 @@ import librosa.display
 matplotlib.use('Agg')
 
 
-def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
+def plot_audio_analysis(audio: np.ndarray, sr: int, title: str, output_path: str = None):
     """
     Plots a figure containing 4 subplots:
     i. Audio
@@ -25,6 +25,8 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
         Sampling frequency in Hz.
     title : str
         Title for the figure.
+    output_path : str, optional
+        Path to save the figure. If None, uses default naming.
     """
     print(f"\n--- Part 1.d: Generating plots for '{title}' ---")
     
@@ -123,8 +125,10 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     
     # Save the figure
-    output_filename = f"analysis_{title.replace(' ', '_').lower()}.png"
-    plt.savefig(output_filename)
-    print(f"-> Saved plot to: {output_filename}")
+    if output_path is None:
+        output_path = f"analysis_{title.replace(' ', '_').lower()}.png"
+        
+    plt.savefig(output_path)
+    print(f"-> Saved plot to: {output_path}")
     plt.close()
 

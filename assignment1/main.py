@@ -38,6 +38,11 @@ from part4 import (
     plot_gain_curve,
 )
 
+from part5 import (
+    time_stretch_phase_vocoder,
+    plot_time_stretch_comparison,
+)
+
 
 def main():
     """Main execution function."""
@@ -180,6 +185,29 @@ def main():
     
     # Part 4.a.vi: Plot scaling factors vs time
     plot_gain_curve(gains_db, fs_16k, hop_length_agc)
+    
+    # =========================================================================
+    # PART 5: Time-Stretching with Phase Vocoder
+    # =========================================================================
+    
+    print("\n" + "=" * 60)
+    print("PART 5: Time-Stretching (x1.5) with Phase Vocoder")
+    print("=" * 60)
+    
+    # 5.a: Time-stretch using phase vocoder (1.5x speed, pitch preserved)
+    TIME_STRETCH_RATE = 1.5
+    stretched_audio = time_stretch_phase_vocoder(
+        audio_16k_resampled, fs_16k, rate=TIME_STRETCH_RATE
+    )
+    
+    # Save stretched audio
+    sf.write(os.path.join(SCRIPT_DIR, "audio_speedx1p5.wav"), stretched_audio, fs_16k)
+    print(f"\n-> Saved time-stretched audio to: audio_speedx1p5.wav")
+    
+    # 5.a.v: Plot time and spectral domain comparison
+    plot_time_stretch_comparison(
+        audio_16k_resampled, stretched_audio, fs_16k, TIME_STRETCH_RATE
+    )
     
     print("\n" + "=" * 60)
     print("Assignment 1 Complete!")

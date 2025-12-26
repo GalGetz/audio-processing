@@ -24,6 +24,9 @@ assignment1/
 ├── part4/
 │   ├── __init__.py
 │   └── agc.py              # compute_frame_rms_db(), compute_agc_gains(), apply_agc(), soft_clip_sigmoid(), plot_gain_curve()
+├── part5/
+│   ├── __init__.py
+│   └── phase_vocoder.py    # stft(), istft(), phase_vocoder(), time_stretch_phase_vocoder(), plot_time_stretch_comparison()
 ├── 10-sec-gal.wav          # Recording (10 seconds)
 └── stationary_noise.wav    # Noise file
 ```
@@ -280,3 +283,80 @@ The `scipy.signal.resample` version is superior.
 - `audio_agc.wav` - AGC-processed audio
 - `part4_agc_gains.png` - Gain (dB) vs time plot
 - `analysis_agc_output_(16khz).png` - Full visualization of AGC output
+
+---
+
+## Part 5: Time-Stretching with Phase Vocoder
+
+### Part 5.a: Overview
+
+**Objective:** Increase the speed of the audio from Q1.c.2 by a factor of x1.5 while **preserving pitch** using a **phase vocoder** algorithm.
+
+**Implementation:** `part5/phase_vocoder.py`
+
+---
+
+### Part 5.a.i: Input/Output Mapping
+
+**Objective:** Set the mapping between input and output times.
+
+- Use **fixed monotonic mapping** for rate=1.5 (speed up)
+- Output frame `t_out` maps to input time `t_in = t_out * rate`
+- Find adjacent frames `t0 = floor(t_in)`, `t1 = min(t0+1, T-1)`
+- Interpolation weight `w = t_in - t0`
+
+---
+
+### Part 5.a.ii: Apply STFT
+
+**Objective:** Compute Short-Time Fourier Transform on the input audio.
+
+- Window: **Hamming** (lecture default)
+- Window size: 20ms
+- Hop size: 10ms
+- Vectorized framing using advanced indexing
+
+---
+
+### Part 5.a.iii: Magnitude and Phase Computation
+
+**Objective:** Calculate magnitude and phase values for the output STFT.
+
+**Lecture-aligned algorithm:**
+
+1. **Magnitude Interpolation:**
+   - `mag_out = (1-w) * |X[t0]| + w * |X[t1]|`
+
+2. **Phase Update (accumulation):**
+   - Compute phase difference: `phase_diff = angle(X[t1]) - angle(X[t0])`
+   - Wrap to [-pi, pi]
+   - Accumulate: `phase_out = phase_prev + expected_advance + phase_diff`
+
+3. **Recompose:**
+   - `Y[t_out] = mag_out * exp(1j * phase_out)`
+
+---
+
+### Part 5.a.iv: Apply iSTFT
+
+**Objective:** Reconstruct time-stretched audio from the modified STFT.
+
+- Inverse rFFT per frame
+- Overlap-add reconstruction (vectorized using `np.add.at`)
+- Output `np.float32`
+
+---
+
+### Part 5.a.v: Plot Signals
+
+**Objective:** Plot original vs stretched audio in time and spectral domains.
+
+**2x2 subplot figure:**
+- Top-left: Original waveform
+- Top-right: Stretched waveform
+- Bottom-left: Original spectrogram
+- Bottom-right: Stretched spectrogram
+
+**Outputs:**
+- `audio_speedx1p5.wav` - Time-stretched audio (1.5x speed, pitch preserved)
+- `part5_time_stretch.png` - Time and spectral domain comparison

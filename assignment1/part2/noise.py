@@ -1,5 +1,3 @@
-"""Part 2: Noise Loading, Addition, and Visualization."""
-
 import os
 import numpy as np
 import soundfile as sf

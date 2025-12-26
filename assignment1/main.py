@@ -9,7 +9,6 @@ Main runner script that executes all parts of the assignment.
 import os
 import soundfile as sf
 
-# Import Part 1 functions
 from part1 import (
     load_audio,
     resample_to_32k,
@@ -17,7 +16,6 @@ from part1 import (
     plot_audio_analysis,
 )
 
-# Import Part 2 functions
 from part2 import (
     load_and_resample_noise,
     add_noise_to_audio,

@@ -1,5 +1,3 @@
-"""Part 1.a: Load the Audio File."""
-
 import os
 import numpy as np
 import soundfile as sf

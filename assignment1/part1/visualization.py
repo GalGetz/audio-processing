@@ -1,5 +1,3 @@
-"""Part 1.d: Visualization Function."""
-
 import numpy as np
 from scipy import signal
 import matplotlib

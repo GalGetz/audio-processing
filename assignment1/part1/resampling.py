@@ -1,5 +1,3 @@
-"""Part 1.b & 1.c: Resampling and Downsampling."""
-
 import numpy as np
 from scipy import signal
 

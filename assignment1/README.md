@@ -92,10 +92,11 @@ assignment1/
 
 **Implementation:** `part1/visualization.py`
 
-1. **Windowing:** 20ms window size, 10ms hop size.
+1. **Windowing:** 20ms window size, 10ms hop size (50% overlap).
 2. **Subplots:**
    - **Audio:** Time-domain waveform.
    - **Spectrogram:** Frequency-domain representation (0 to Fmax) with pitch contour overlay (Praat/Parselmouth).
+   - **Mel-Spectrogram:** Perceptual frequency scale (librosa).
    - **Mel-Spectrogram:** Perceptual frequency scale (librosa).
    - **Energy and RMS:** Temporal evolution of loudness (vectorized NumPy).
 
@@ -116,6 +117,10 @@ The `scipy.signal.resample` version is superior.
 **Why?**
 - **Aliasing:** Naive decimation (taking every 2nd sample) violates Nyquist if the signal has frequencies above 8kHz. These fold back as distortion.
 - **Anti-aliasing:** `scipy.signal.resample` uses an FFT-based approach that effectively prevents aliasing.
+
+**Lecture-aligned parameter choices:**
+- **Spectrogram/STFT window:** Hamming
+- **Mel filterbank size:** 80 mels (typical 40–80 @ 16kHz)
 
 **Outputs:**
 - `audio_16k_naive.wav` - Naive downsampled audio

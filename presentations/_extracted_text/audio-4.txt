@@ -1,0 +1,161 @@
+DSP Lecture 3
+Continuous Time Signal Analysis- The Fourier Series 
+& Fourier Transform
+Tal Rosenwein 1
+Lecture Overview
+Credit
+DSP, Tal Rosenwein 2
+Lecture Overview
+1. Preliminaries
+2. Time Fourier Series
+3. The Fourier Transform
+3DSP, Tal Rosenwein
+Lecture Goals
+1. Gain intuition on ‘what frequency means?’
+2. Similarity between Fourier and basis of vector space.  
+3. Get familiar with Fourier Series (for continuous and 
+periodic signals) and some its properties 
+4. Get familiar with Fourier Transform (for continuous and 
+non-periodic signals) and its properties
+5. Gain Intuition on duality between time and frequency 
+domains.
+DSP, Tal Rosenwein 4
+Lecture Overview
+1. Preliminaries
+2. The Fourier Series
+3. The Fourier Transform
+DSP, Tal Rosenwein 5
+What is a frequency?
+https://www.youtube.com/embed/spUNpyF58BY?start=50&end=150
+DSP, Tal Rosenwein 6Source 1
+What is a frequency?
+https://www.szynalski.com/tone-generator/
+DSP, Tal Rosenwein 7Source 1, 2
+What is a frequency?
+DSP, Tal Rosenwein 8Source 1, 2, 3
+What is a frequency?
+DSP, Tal Rosenwein 9
+What is a frequency?
+DSP, Tal Rosenwein 10Source 1, 2
+What is a frequency?
+https://www.tiktok.com/@lewitt.audio/video/7213768652880022789 
+DSP, Tal Rosenwein 11
+What is a frequency?
+Cos/Sin with frequency of 10Hz has a wavelength of ~30 meters.
+● Recall that the speed of sound is c=343 [m/s] 
+● c[m/s]=𝜆[m]f[1/s]
+● If we set f=10Hz; Hz=1/sec 
+● 343[m/s]=𝜆[m]f[1/s] ->f = 10[1/s] →𝜆 = 34.3[m]  
+SourceDSP, Tal Rosenwein 12
+What is a frequency?
+Basis of vector space
+Each sample Si can be represented as a linear 
+combination of the basis vectors.
+In order to find alpha_i we PROJECT the sample over 
+Vi
+DSP, Tal Rosenwein 13Source
+What is a frequency?
+Gibbs phenomenon- intuitionDSP, Tal Rosenwein 14Source 1, 2
+Lecture Overview
+1. Preliminaries
+2. The Fourier Series
+3. The Fourier Transform
+DSP, Tal Rosenwein 15
+16DSP, Tal Rosenwein
+17DSP, Tal Rosenwein
+18DSP, Tal Rosenwein
+19DSP, Tal Rosenwein
+DC - (n = 0) (offset)
+Average
+Projection over const
+Even terms
+Projection over cosine funcs
+Odd terms
+Projection over sine funcs
+Fourier can be interpreted as reconstructing the original 
+signal using cos/sin basis vectors  
+20DSP, Tal Rosenwein
+21DSP, Tal Rosenwein
+Cos / Sin / conj. Exp are basis vectors 
+(orthogonal to each other)  
+22DSP, Tal Rosenwein
+23DSP, Tal Rosenwein
+24DSP, Tal Rosenwein
+25DSP, Tal Rosenwein
+?
+DC
+Average
+Direct transform
+26DSP, Tal Rosenwein
+Direct transform
+27DSP, Tal Rosenwein
+Direct transform
+28DSP, Tal Rosenwein
+Direct transform
+29DSP, Tal Rosenwein
+Time Domain
+Intuition
+30DSP, Tal Rosenwein
+Conv in Time = 
+Mul in Freq
+Intuition
+31DSP, Tal Rosenwein
+32DSP, Tal Rosenwein
+33DSP, Tal Rosenwein
+Some intuition on the importance of the magnitude and phase
+34DSP, Tal Rosenwein
+35DSP, Tal Rosenwein
+Source
+ 36DSP, Tal Rosenwein
+37DSP, Tal Rosenwein
+Audacity: switch left/right between these audio files: left / right
+38DSP, Tal Rosenwein
+Lecture Overview
+1. Preliminaries
+2. The Fourier Series
+3. The Fourier Transform
+39DSP, Tal Rosenwein
+40DSP, Tal Rosenwein
+41DSP, Tal Rosenwein
+42DSP, Tal Rosenwein
+Finite in time <-> infinite in spectra 43DSP, Tal Rosenwein
+What can it be useful for?
+44DSP, Tal Rosenwein
+Intuition:
+ in time domain there is an 
+offset (DC) -> only a single 
+component in the 
+spectrum should be “on” - 
+DC component
+45DSP, Tal Rosenwein
+Transform of sin / cos
+46DSP, Tal Rosenwein
+Transform of sin / cos
+47DSP, Tal Rosenwein
+Transform of sin / cos
+48DSP, Tal Rosenwein
+Periodic Signal < -- > Discrete Spectrum
+Discrete Signal < -- >             ?    dddddd
+Conv in Time = 
+Mul in Freq
+49DSP, Tal Rosenwein
+50DSP, Tal Rosenwein
+51DSP, Tal Rosenwein
+52DSP, Tal Rosenwein
+53DSP, Tal Rosenwein
+54DSP, Tal Rosenwein
+Periodic Signal < -- > Discrete Spectrum
+Discrete Signal < -- > Periodic Spectrum
+Conv in Time = 
+Mul in Freq
+55DSP, Tal Rosenwein
+Lecture Goals
+1. Gain intuition on ‘what frequency means?’
+2. Similarity between Fourier and basis of vector space.  
+3. Get familiar with Fourier Series (for continuous and 
+periodic signals) and some its properties 
+4. Get familiar with Fourier Transform (for continuous and 
+non-periodic signals) and its properties
+5. Gain Intuition on duality between time and frequency 
+domains.
+DSP, Tal Rosenwein 56

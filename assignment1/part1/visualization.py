@@ -46,10 +46,14 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
     axes[0].grid(True)
     
     # ii. Spectrogram + Pitch Contour
-    # Calculate spectrogram using scipy
-    frequencies, times, spec = signal.spectrogram(audio, fs=sr, 
-                                                 nperseg=n_fft, 
-                                                 noverlap=n_fft - hop_length)
+    # Calculate spectrogram using scipy (match lecture default: Hamming window)
+    frequencies, times, spec = signal.spectrogram(
+        audio,
+        fs=sr,
+        window="hamming",
+        nperseg=n_fft,
+        noverlap=n_fft - hop_length,
+    )
     
     # Use log scale for better visualization and avoid log(0)
     spec_db = 10 * np.log10(spec + 1e-10)
@@ -75,13 +79,18 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str):
     ax_pitch.set_ylim(0, 600)
     
     # iii. Mel-Spectrogram (using librosa)
-    n_mels = 128
+    # Match lecture typical range: 40-80 mel filters @ 16kHz (use 80 here)
+    n_mels = 80
     
     # Calculate Mel Spectrogram using librosa
-    S_mel = librosa.feature.melspectrogram(y=audio, sr=sr, 
-                                           n_fft=n_fft, 
-                                           hop_length=hop_length, 
-                                           n_mels=n_mels)
+    S_mel = librosa.feature.melspectrogram(
+        y=audio,
+        sr=sr,
+        n_fft=n_fft,
+        hop_length=hop_length,
+        n_mels=n_mels,
+        window="hamming",
+    )
     S_mel_db = librosa.power_to_db(S_mel, ref=np.max)
     
     # Plot using librosa's display helper

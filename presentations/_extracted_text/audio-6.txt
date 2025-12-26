@@ -1,0 +1,190 @@
+DSP Lecture 5
+Speech Signal Processing
+Tal Rosenwein 1
+Lecture Overview
+1. FIR & IIR Filters
+2. Classification of Signals
+3. Energy / RMS calculation
+DSP, Tal Rosenwein 2
+Lecture Goals
+1. Learn basic concepts about audio processing 
+2. Learn basic concepts about speech signal processing
+DSP, Tal Rosenwein 3
+Lecture Overview
+1. FIR & IIR Filters
+2. Classification of Signals
+3. Energy / RMS calculation
+DSP, Tal Rosenwein 4
+● Finite Impulse Response - h[n] is finite
+● FIR filters are always stable (by definition- all poles are at the origin, z=0)
+● Also known as ‘moving average filters’ (MA), or ‘all zeros’ filters
+● Pros:
+○ Stable
+○ Linear phase
+○ Easy to implement and  construct using closed-form formulas
+● Cons:
+○ In order to get a sharp response, large order is required.
+○ Larger delay compared to IIR
+FIR & IIR Filters: FIR
+Differential equation:
+Transfer function (Z):
+Impulse response:
+DSP, Tal Rosenwein 5
+● Infinite Impulse Response - h[n] is infinite
+● IIR filters iff all poles lie inside the unit circle
+● Also known as ‘AutoRregressive Moving Average filters’ (ARMA)
+● Pros:
+○ Obtain sharper frequency response compared to same-order FIR filters 
+(by moving the poles from origin)- lower computational complexity
+○ Lower latency compared to FIR 
+● Cons:
+○ May cause phase issues
+○ Harder to implement (no-close form in some cases). 
+○ Overflow may be an issue due to recursiveness (infinite) of the response.
+FIR & IIR Filters: IIR
+Differential equation:
+Transfer function (Z):
+Differential equation:
+DSP, Tal Rosenwein 6
+Lecture Overview
+1. FIR & IIR Filters
+2. Classification of Signals
+3. Energy / RMS calculation
+DSP, Tal Rosenwein 7
+Classification of Signals
+Signals can be classified in various ways as we saw in previous lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+DSP, Tal Rosenwein 8
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+DSP, Tal Rosenwein 9
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+● Stationary Vs. non-stationary.
+Stationarity is a way of describing the characteristics of the signal generating process, which 
+further gives us two categories.
+The difference between stationary and non-stationary signals is that the statistical (joint probability 
+distribution) properties of a stationary process signal do not change with time. Consequently, 
+parameters such as mean and variance also do not change over time.
+Many time we use wide-sense stationarity (WSS) that implies that the mean and autocovariance do not 
+change over time, while the second moment (variance) is finite
+DSP, Tal Rosenwein Source 1, 2 10
+Signals
+Stationary:
+● White noise (probabilistic & stationary)
+● Sin / cos (deterministic  & stationary)
+Non-Stationary:
+● Speech (probabilistic & non-stationary)
+DSP, Tal Rosenwein 11Source 1, 2
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+● Stationary Vs. non-stationary.
+DSP, Tal Rosenwein
+12
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+● Stationary Vs. non-stationary.
+DSP, Tal Rosenwein
+13
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+● Stationary Vs. non-stationary.
+sinc effect
+DSP, Tal Rosenwein
+14
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+● Stationary Vs. non-stationary.
+DFT ‘averages’ the spectrum of signals, and it is not 
+suitable for non-stationary signals
+DSP, Tal Rosenwein
+15
+Classification of Signals
+Signals can be classified in various ways as we saw in pervious lectures: 
+● Continuous vs discrete
+● Periodic vs Aperiodic
+We will now discuss on two classes:
+● Probabilistic Vs Deterministic.
+● Stationary Vs. non-stationary.
+DSP, Tal Rosenwein 16
+Classification of Signals
+DSP, Tal Rosenwein 17Slide taken from Kishore Prahallad 
+Classification of Signals
+DSP, Tal Rosenwein 18Slide taken from Kishore Prahallad 
+Classification of Signals
+DSP, Tal Rosenwein 19Slide taken from Kishore Prahallad 
+Classification of Signals
+DSP, Tal Rosenwein 20Slide taken from Kishore Prahallad 
+Classification of Signals
+DSP, Tal Rosenwein 21Slide taken from Kishore Prahallad 
+Slide taken from Kishore Prahallad 
+Classification of Signals
+DSP, Tal Rosenwein 22
+Classification of Signals
+Temporal / Frequency Resolution Tradeoff
+Frame Size = 512
+Frame Size = 2048
+Frame Size = 8192
+DSP, Tal Rosenwein 23
+Classification of Signals
+DSP, Tal Rosenwein 24
+Classification of Signals
+DSP, Tal Rosenwein 25
+Classification of Signals
+DSP, Tal Rosenwein 26
+Lecture Overview
+1. FIR & IIR Filters
+2. Classification of Signals
+3. Energy / RMS calculation
+DSP, Tal Rosenwein 27
+Energy & RMS
+● Sometimes we want to represent some “trends” of signal, but its average has a (zero) constant 
+value.
+● 2 accepted measures for an ‘alternative’ average: RMS and Energy
+○ RMS: Root-Mean-Squared. Most books define this as the “amount of AC power that produces the same 
+heating effect as an equivalent DC power”
+○ Energy:  defined as the area under the squared magnitude of the considered signal
+● Usually calculated in chunks with hop.
+DSP, Tal Rosenwein 28Source 1, 2
+Energy & RMS
++6.02dB
+y
+2y
+DSP, Tal Rosenwein 29
+Energy & RMS
+DSP, Tal Rosenwein 30
+Energy & RMS
+DSP, Tal Rosenwein 31
+Energy & RMS
+DSP, Tal Rosenwein 32
+Energy & RMS
+DSP, Tal Rosenwein 33
+Code
+DSP, Tal Rosenwein 34

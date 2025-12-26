@@ -1,0 +1,1057 @@
+Traditional DSP for 
+Audio & Speech
+Tal Rosenwein
+Goal
+2
+Image source
+DSP for Audio, Tal Rosenwein
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+3DSP for Audio, Tal Rosenwein
+Motivation
+- Huge Market
+- Make Our Lives Easier
+- Save Human Labour
+- Remove Bureaucracy
+4DSP for Audio, Tal Rosenwein Source 1, 2
+Motivation
+- Huge Market
+- Make Our Lives Easier
+- Save Human Labour
+- Remove Bureaucracy
+5
+DSP for Audio, Tal Rosenwein Source 1
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+6DSP for Audio, Tal Rosenwein
+Communication
+7DSP for Audio, Tal Rosenwein
+● Speaker produces acoustic wave that emitted from the mouth/nostrils (nose) 
+and propagates to the hears of the listener
+● Multiple organs (nostrils, mouth, throat, teeth, tongue, etc.) are included in  
+speech generation. 
+Communication
+8DSP for Audio, Tal Rosenwein
+Conversation ﬂow:
+● Creating the notion we want to transmit.● Mapping / transducing this notion into a linguistic domain● Choosing the words that best represent this notion● Arranging the words in order according to linguistic rules of a given language● Adding prosodic features for emphasize diﬀerent aspects of the notion we want to convey● The brain sends a series of motoric commands● We then move the relevant mussels● Produce the sequence of sounds ● Transmitting an acoustic wave to the ears of the partner through the medium.
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+9DSP for Audio, Tal Rosenwein
+Anatomy & Modelling of Speech Production
+10DSP for Audio, Tal Rosenwein
+Audio- Pressure Wave
+11Image source
+DSP for Audio, Tal Rosenwein
+Anatomy & Modelling of Speech Production
+12DSP for Audio, Tal Rosenwein
+
+Speech Production Organs
+13
+Subglottal 
+Respiratory
+ System
+Larynx
+Vocal tract
+●  video
+Source 1DSP for Audio, Tal Rosenwein
+Speech Production- Source-Filter Model
+14
+Voiced
+Un-Voiced
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production- Source-Filter Model
+15
+Voiced
+Un-Voiced
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production Organs
+16
+Subglottal 
+Respiratory
+ System
+Larynx
+Vocal tract
+●  video
+Source 1DSP for Audio, Tal Rosenwein
+Speech Production Organs - Larynx
+17
+● Larynx is responsible for diﬀerent phonation modes (voiceless, voiced, whisper)
+● During voiceless phonation (e.g. [s] in “star”) and whisper, vocal cords are apart from each 
+other, and the airstream passes through the open glottis (the opening between the vocal cords)
+● In voiced phonation (e.g. [a] in “star”), vocal folds are successively opening and closing, creating 
+a periodic waveform. The frequency of vibration is called fundamental frequency (or pitch) and 
+abbreviated F0.
+● “vocal cords in action”- video. This video is less disgusting. 
+Source 1DSP for Audio, Tal Rosenwein
+
+Speech Production Organs - Larynx
+18
+● Larynx is responsible for diﬀerent phonation modes (voiceless, voiced, whisper)
+● During voiceless phonation (e.g. [s] in “star”) and whisper, vocal cords are apart from each 
+other, and the airstream passes through the open glottis (the opening between the vocal cords)
+● In voiced phonation (e.g. [a] in “star”), vocal folds are successively opening and closing, creating 
+a periodic waveform. The frequency of vibration is called fundamental frequency (or pitch) and 
+abbreviated F0.
+○ Average F0 values for male, female, and children are about 120, 220 and 330 Hz.
+○ The shape of the glottal pulse is individual, and it is an important determinant of the 
+perceived voice quality (“She has a harsh / rough / breathy / clear /.. voice”)
+Source 1DSP for Audio, Tal Rosenwein
+Speech Production Organs - Vocal Tract
+● Includes pharyngeal, oral and nasal cavities. The volumes and shapes of these are individual.
+● Can be roughly characterized by its (time-varying) resonance frequencies called formants
+● Can be modeled as a hard-walled lossless tube resonator consisting 
+of N tubes with diﬀerent cross-sectional areas
+● Can be modeled by a (time-varying) ﬁlter.
+● Example: Car Exhaust
+Source 1 19DSP for Audio, Tal Rosenwein
+Speech Production Organs - Vocal Tract
+20
+● video
+● Oral Vs Nasal sounds:
+○ Close your nose and say ‘mmmm’ for 5 sec
+○ Close your nose and say ‘ Laaaaaa’ for 5 sec
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production Organs - Vocal Tract
+21
+● Vocal Tract (also lips, tongue…) changes when diﬀerent vowels are pronounced
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production- Source-Filter Model
+22
+● The resulting speech spectrum S(z) is a combination of the 
+source spectrum U(z) and the vocal tract transfer function 
+H(z):
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production- Source-Filter Model
+23
+Voiced
+Un-Voiced
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production- Source-Filter Model
+24
+Voiced
+Un-Voiced
+DSP for Audio, Tal Rosenwein Source 1
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+25DSP for Audio, Tal Rosenwein
+Phonetics
+26DSP for Audio, Tal Rosenwein
+ Source Google
+Phonetics
+27DSP for Audio, Tal Rosenwein Source Google
+Phonetic has 3 branches:
+● Articulatory phonetics: how speech-sound is generated, in terms of 
+mechanics
+● Acoustic phonetics: how speech-sounds are transmitted, in terms of 
+acoustics.
+● Auditory/perceptual phonetics: how sound is perceived by our brain
+Phonetics
+28DSP for Audio, Tal Rosenwein Source Google
+● Phoneme: the smallest phonetic unit that has meaning in the language. 
+Represented by slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● Phone: Distinct speech sound or gesture, regardless of whether the exact 
+sound is critical to the meaning of words. Phoneme is the basic / atomic 
+piece to convey a lingual message. 
+○ “Guimarães”- we can produce ã but it has no meaning in English
+● Allophone: group of phones represented by the same phoneme 
+(variations of phonemes). For example diﬀerent pronunciation of the letter 
+t in top, stop, butter, are allophones of the phoneme /t/.
+Phonetics
+29DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic 
+unit that has meaning in the 
+language. Represented by 
+slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+
+Phonetics
+30DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic 
+unit that has meaning in the 
+language. Represented by 
+slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● Diﬀerent lexicons / standards: 
+IPA, ARPABET
+
+Phonetics
+31DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic unit that has meaning in the language. 
+Represented by slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● Diﬀerent lexicons / standards: IPA, ARPABET
+○ IPA lexicon has 44 phonemes, ARPABET has 46.
+○ In English there are 65 phonemes, usually people compress it to 39 
+phonemes.
+Phonetics
+32DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic unit that has meaning in the language. 
+Represented by slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● There are some lexicons, such as the CMU dictionary that breaks each word 
+to it’s phoneme sequence. Online link
+
+Phonetics
+33DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic unit that has meaning in the language. 
+Represented by slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● There are some lexicons, such as the CMU dictionary that breaks each word 
+to it’s phoneme sequence. Online link
+● Use this link to read IPA phoneme sequence 
+Phonetics
+34DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic 
+unit that has meaning in the 
+language. Represented by 
+slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● The articulator has a diﬀerent 
+setup for each phoneme
+
+Phonetics
+35DSP for Audio, Tal Rosenwein Source 1
+● Phoneme: the smallest phonetic 
+unit that has meaning in the 
+language. Represented by 
+slashes by convention.
+○ /K/ /IY/ /P/ Vs /D/ /IY/ /P/
+● The articulator has a diﬀerent 
+setup for each phoneme
+
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+36DSP for Audio, Tal Rosenwein
+Speech & Audio Signal Processing
+37DSP for Audio, Tal Rosenwein
+Speech Signal Processing- General Pipeline
+38
+● Analog audio input reaches the microphone
+● AAF: Anti-aliasing ﬁlter (AAF) is applied (the analog audio is on inﬁnite frequency response, 
+hence we need to truncate it to a ﬁnit one, done in an analog manner because we once 
+we will sample the signal we will have aliasing)
+● A/D convertor: After applying the AAF, we then convert to digital- both magnitude 
+(amplitude- bits) and sampling (discrete- time).
+● DC Removal: Usually we subtract mean to remove biases due to acquisition problems
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein
+Speech Signal Processing- General Pipeline
+39
+● Pre-emphasis Filter: The natural attenuation that arises from 
+voice source is about -12 dB/octave. Pre-emphasis makes higher 
+frequencies of voiced sounds more apparent
+● Windowing:
+○ Non-stationary signals are processed in short frames 
+(assumed stationary) that are overlapping with each other. 
+○ Typical frame length ~ 20-40 msec, overlapping ~ 30-75 %
+● Framing: Windowing reduces the eﬀect of the spectral artefacts 
+that arise from discontinuities at the frame endpoints. Typically 
+Hamming window is used
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein Source 1 39
+Speech Signal Processing- General Pipeline
+40
+● Feature extraction:
+○ A link to torch.audio tutorial for playing/manipulating audio
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein 40
+Speech Signal Processing- General Pipeline
+41
+● STFT: The most well-known approach to time-frequency analysis makes use of nonparametric, 
+Fourier-based spectral analysis applied to each of the short segments- an operation referred to as 
+the Short-Time Fourier Transform (STFT). In this approach, the deﬁnition of the Fourier transform is 
+modiﬁed so that a sliding time window w[n] is included, and deﬁnes each time segment to be 
+analyzed, thus resulting in a two-dimensional function.
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein 41Source 1
+Speech Signal Processing- General Pipeline
+42
+● Mel Spectrogram: 
+○ Linear projects. Where the projection matrix is Nﬁlters X Mag STFT size.
+○ Typical value: 40-80 ﬁlters@16KHz.
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein 42Source 1
+
+Speech Signal Processing- General Pipeline
+43
+● Mel Spectrogram: 
+○ Linear projects. Where the projection matrix is Nﬁlters X Mag STFT size.
+○ Typical value: 40-80 ﬁlters@16KHz.
+○ Compression of upper frequencies (according to mel scale- powered by perceptual 
+motivation)
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein 43Source 1
+
+Speech Signal Processing- General Pipeline
+44
+● MFCCs (Mel Frequency Cepstral Coeﬃcients)
+○ After receiving Mel ﬁlter banks, we apply a series of operations and get the MFCCs.
+○ Usually 13 coeﬃcients. 
+○ Along with delta and delta-delta (temporal derivatives) which results in 39 coeﬀs.
+○ They were widely used due to several reasons, such as interpretation. Will not elaborate as 
+they are currently not in use anymore (only in HuBERT for initialization of the clusters during 
+pre-training).
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+DSP for Audio, Tal Rosenwein 44Source 1
+
+Speech Signal Processing- General Pipeline
+45
+● STFT: The most well-known approach to time-frequency analysis makes use of nonparametric, 
+Fourier-based spectral analysis applied to each of the short segments- an operation referred to as 
+the Short-Time Fourier Transform (STFT). In this approach, the deﬁnition of the Fourier transform is 
+modiﬁed so that a sliding time window w[n] is included, and deﬁnes each time segment to be 
+analyzed, thus resulting in a two-dimensional function.
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+https://www.sciencedirect.com/topics/engineering/
+short-time-fourier-transform
+http://vnit.ac.in/ece/wp-content/uploads/2019/10/S
+TFT_analysis_synthesis.pdf
+DSP for Audio, Tal Rosenwein 45
+Speech Signal Processing- General Pipeline
+46
+● STFT: The most well-known approach to time-frequency analysis makes use of nonparametric, 
+Fourier-based spectral analysis applied to each of the short segments- an operation referred to as 
+the Short-Time Fourier Transform (STFT). In this approach, the deﬁnition of the Fourier transform is 
+modiﬁed so that a sliding time window w[n] is included, and deﬁnes each time segment to be 
+analyzed, thus resulting in a two-dimensional function.
+Analog 
+Audio
+AAF 
+(Analog
+LPF)
+A/D 
+Converter
+Pre-
+Emphasis 
+Filter (HPF)
+Windowing 
+&
+Framing
+Feature 
+Extraction 
+(STFT, 
+Mel...)
+https://www.sciencedirect.com/topics/engineering/
+short-time-fourier-transform
+http://vnit.ac.in/ece/wp-content/uploads/2019/10/S
+TFT_analysis_synthesis.pdf
+DSP for Audio, Tal Rosenwein 46
+Speech Production- Source-Filter Model
+47
+● The resulting speech spectrum S(z) is a combination of the 
+source spectrum U(z) and the vocal tract transfer function 
+H(z):
+DSP for Audio, Tal Rosenwein Source 1
+Speech Production- Source-Filter Model
+48
+Voiced
+Un-Voiced
+DSP for Audio, Tal Rosenwein Source 1
+Speech Signals Analysis
+49
+● Pitch, Formants and Spectral Envelope
+DSP for Audio, Tal Rosenwein Source 1
+
+Speech Signals Analysis
+50
+● Pitch, Formants and Spectral Envelope
+DSP for Audio, Tal Rosenwein Source 1
+Speech Signals Analysis: Pitch Detection
+51
+● Various algorithms, such as autocorrelation
+DSP for Audio, Tal Rosenwein
+Speech Signals Analysis: Spectral Envelope
+52
+● Linear Predictive Coding (LPC)
+● Parametric method for representing the spectral envelope in a compressed from (was 
+the basis of VoIP).The process is done on frames due to non-stationarity property of the 
+speech signal.
+DSP for Audio, Tal Rosenwein
+Speech Signals Analysis: Spectral Envelope
+53
+● Linear Predictive Coding (LPC)
+● Parametric method for representing the spectral envelope in a compressed from (was 
+the basis of VoIP). 
+● The process is done on frames due to non-stationarity property of the speech signal.
+DSP for Audio, Tal Rosenwein
+Speech Signals Analysis: Spectral Envelope
+54
+● Linear Predictive Coding (LPC)
+● Parametric method for representing the spectral envelope in a compressed from (was 
+the basis of VoIP).The process is done on frames due to non-stationarity property of the 
+speech signal.
+DSP for Audio, Tal Rosenwein Image Source 1
+Speech Signals Analysis: Classiﬁcation
+55
+● Naive Classiﬁcation:
+○ Speech Vs non-speech: 
+Energy
+○ Unvoiced: Zero Crossing 
+Rate (ZCR)
+○ Voiced: The rest
+DSP for Audio, Tal Rosenwein
+Speech Signals Analysis: Classiﬁcation
+56
+● Naive Classiﬁcation:
+○ Speech Vs non-speech: 
+Energy
+○ Unvoiced: Zero Crossing 
+Rate (ZCR)
+○ Voiced: The rest
+● But what happens in noisy 
+environments:
+○ Pitch- voiced
+DSP for Audio, Tal Rosenwein
+Speech Signals Analysis: Classiﬁcation
+57
+DSP for Audio, Tal Rosenwein
+● Naive Classiﬁcation:
+○ Speech Vs non-speech: 
+Energy
+○ Unvoiced: Zero Crossing 
+Rate (ZCR)
+○ Voiced: The rest
+● But what happens in noisy 
+environments:
+○ Pitch- voiced
+Speech Signals Analysis: Energy & RMS
+● Sometimes we want to represent some “trends” of signal, but its average has a (zero) 
+constant value.
+● 2 accepted measures for an ‘alternative’ average: RMS and Energy
+○ RMS: Root-Mean-Squared. Most books deﬁne this as the “amount of AC power that 
+produces the same heating eﬀect as an equivalent DC power”
+○ Energy:  deﬁned as the area under the squared magnitude of the considered signal
+● Usually calculated in chunks with hop.
+58
+DSP for Audio, Tal Rosenwein Image Source 1, 2
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+59DSP for Audio, Tal Rosenwein
+Applications
+60
+Image SourceDSP for Audio, Tal Rosenwein
+Applications
+61
+Challenges:
+1. Delayed signal / packet lost -        Time stretching
+2. Noisy environment -                       Noise reduction
+3. Speakers with multiple gains -      Auto gain control
+4. Audio Clipping -   Audio Compression
+5. Connectivity issues -                      Variable bitrate vocoders
+Image SourceDSP for Audio, Tal Rosenwein
+Applications
+62
+Image SourceDSP for Audio, Tal Rosenwein
+Challenges:
+1. Delayed signal / packet lost -        Time stretching
+2. Noisy environment -                       Noise reduction
+3. Speakers with multiple gains -      Auto gain control
+4. Audio Clipping -   Audio Compression
+5. Connectivity issues -                      Variable bitrate vocoders
+Applications: Time Stretching
+● Many applications require to align input and output audio, as in soundtracks. Or we want 
+to hear a Y ouTube video in a diﬀerent rate than it was recorded.
+● Hence, we would like to change the speed of the wav ﬁle
+● Doing the naive way:
+63
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● Doing the naive way will change the pitch
+64
+Speeding up the audio → period is shorter → increasing frequency 
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● Doing the naive way will change the pitch
+65
+Speeding up the audio → period is shorter → increasing frequency 
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● Doing the naive way will change the pitch
+66DSP for Audio, Tal Rosenwein
+
+Applications: Time Stretching
+● Doing the naive way will change the pitch
+67DSP for Audio, Tal Rosenwein
+
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+68DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder 
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+69DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+70
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+71DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+● Phase: Add prev value to the diﬀ between the nearest neighbours values. 
+(keep the rate of change similar as the input) 
+● Append to prev value to form the output STFT.
+72
+out_t=90
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+● Phase: Add prev value to the diﬀ between the nearest neighbours values. 
+(keep the rate of change similar as the input) 
+● Append to prev value to form the output STFT.
+73
+in_t=55.2
+out_t=90
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+● Phase: Add prev value to the diﬀ between the nearest neighbours values. 
+(keep the rate of change similar as the input) 
+● Append to prev value to form the output STFT.
+74
+in_t=55.2
+out_t=90
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+● Phase: Add prev value to the diﬀ between the nearest neighbours values. 
+(keep the rate of change similar as the input) 
+● Append to prev value to form the output STFT.
+75
+Out_Mag[90] = 
+0.8*In_Mag[55] + 
+0.2*In_Mag[56]
+in_t=55.2
+out_t=90
+DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+● Phase: Add prev value to the diﬀ between the nearest neighbours values. 
+(keep the rate of change similar as the input) 
+● Append to prev value to form the output STFT.
+76DSP for Audio, Tal Rosenwein
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder (phase_vocoder_variable_example)
+○ Set the alignment between input and output times
+■ Must be monotonic w.r.t the input
+■ Can be ﬁxed / non-ﬁxed alignment
+○ Iterate over the output times:
+■ Current value indicates what is the input index that the current output should 
+consider.
+● Mag:Find nearest neighbour within the input vector for that time, and 
+interpolation between adjacent frames in the spectrogram
+● Phase: Add prev value to the diﬀ between the nearest neighbours values. 
+(keep the rate of change similar as the input) 
+● Append to prev value to form the output STFT.
+77DSP for Audio, Tal Rosenwein
+
+Applications: Time Stretching
+● We need to ﬁnd an approximation that will stretch while keeping the pitch without too 
+much distortion. 
+● Phase Vocoder
+○ Example
+● Learnable methods (ScalerGAN)
+78DSP for Audio, Tal Rosenwein
+Applications
+79
+Image SourceDSP for Audio, Tal Rosenwein
+Challenges:
+1. Delayed signal / packet lost -        Time stretching
+2. Noisy environment -                       Noise reduction
+3. Speakers with multiple gains -      Auto gain control
+4. Audio Clipping -   Audio Compression
+5. Connectivity issues -                      Variable bitrate vocoders
+Applications: Speech Enhancement
+● When we record audio it is noisy as the we are not in studio.
+● We would like to remove background noise from the acquired signal
+80
+● Where: y[n] is the acquired signal, x[n] is the desired signal, and s[n] is stationary 
+background noise signal 
+DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+81
+DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals will 
+be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+82DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals will 
+be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+83
+DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals will 
+be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+84DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals will 
+be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+85DSP for Audio, Tal Rosenwein
+
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals 
+will be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+86DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals 
+will be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+87
+DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals will 
+be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+88DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Approach: Subtract the estimated noisy magnitude from the acquired signal. 
+● Therefore, we need to estimate the noise:
+○ Locate segments / frames where there is no speech (using VAD)
+○ Aggregate statistics to a buﬀer: (determine buﬀer size)
+○ Average the buﬀer to form the noise estimation (assuming non stationary signals will 
+be averaged out)
+○ Subtracting the noise estimation from the input signal y[n]
+89
+DSP for Audio, Tal Rosenwein
+Applications: Speech Enhancement
+● Python and Audacity examples
+● Challenges:
+○ Updating vs freezing the noise estimation vector: pros and cons
+○ Musical noises may appear when ﬁltering is too aggressive: 
+● Learnable methods (DEMUCS)
+90
+DSP for Audio, Tal Rosenwein
+Applications
+91
+Image SourceDSP for Audio, Tal Rosenwein
+Challenges:
+1. Delayed signal / packet lost -        Time stretching
+2. Noisy environment -                       Noise reduction
+3. Speakers with multiple gains -      Auto gain control
+4. Audio Clipping -   Audio Compression
+5. Connectivity issues -                      Variable bitrate vocoders
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame
+92DSP for Audio, Tal Rosenwein
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+93DSP for Audio, Tal Rosenwein
+
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+94DSP for Audio, Tal Rosenwein
+
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+95DSP for Audio, Tal Rosenwein
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+○ So we will aggregate stats
+96DSP for Audio, Tal Rosenwein
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+○ So we will aggregate stats
+97
+DSP for Audio, Tal Rosenwein
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+○ So we will aggregate stats
+98
+Attack (Red > Green) Release (Red < Green)DSP for Audio, Tal Rosenwein
+Applications: Auto Gain Control
+● In many cases we would like to have a constant “volume” regardless of how the speaker 
+is speaking.
+○ Our algorithm is sensitive to RMS
+○ Our users are sensitive to RMS
+● Hence we need to determine the desired RMS and normalize the audio accordingly
+○ Applying the same factor to all frames will result in a constant ampliﬁcation
+○ So we need to do it frame-by-frame- “pumping” eﬀect
+○ So we will aggregate stats
+● Additional challenges:
+○ Overﬂow: results in clipping (compression, sigmoid)
+○ Do not amplify noise: determine energy threshold (noise ﬂoor)
+○ Smooth transient noises: Attack and release: using hard decision / soft decision 
+(exponential decay). 99DSP for Audio, Tal Rosenwein
+Applications
+100
+Image SourceDSP for Audio, Tal Rosenwein
+Challenges:
+1. Delayed signal / packet lost -        Time stretching
+2. Noisy environment -                       Noise reduction
+3. Speakers with multiple gains -      Auto gain control
+4. Audio Clipping -   Audio Compression
+5. Connectivity issues -                      Variable bitrate vocoders
+Applications: Audio Compression
+● In many cases we would like to have a diﬀerent dynamic range
+○ People with hearing loss
+○ Audio editing- emphasis some parts or making audio sound better 
+101
+Image SourceDSP for Audio, Tal Rosenwein
+Applications: Audio Compression
+● In many cases we would like to have a diﬀerent dynamic range
+○ People with hearing loss
+○ Audio editing- emphasis some parts or making audio sound better 
+● We need to determine the mapping between the input and output gains
+○ Attack and release: when / how fast do we want to apply compression: only on 
+non-transient parts.
+102DSP for Audio, Tal Rosenwein
+Applications
+103
+Image Source
+DSP for Audio, Tal Rosenwein
+Applications
+104
+Image SourceDSP for Audio, Tal Rosenwein
+Challenges:
+1. Delayed signal / packet lost -        Time stretching
+2. Noisy environment -                       Noise reduction
+3. Speakers with multiple gains -      Auto gain control
+4. Audio Clipping -   Audio Compression
+5. Connectivity issues -                      Variable bitrate vocoders
+Overview
+- Motivation
+- Communication
+- Anatomy & Speech production system
+- Phonetics
+- Acoustic/Speech Features
+- Traditional Speech Signals Analysis
+- Time Stretching
+- Speech Enhancement- Spectral Subtraction
+- Auto Gain Control (AGC)
+- Audio Compression
+105DSP for Audio, Tal Rosenwein

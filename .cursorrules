@@ -1,0 +1,134 @@
+# Audio Processing Project Rules
+
+## Python Best Practices
+
+### General
+- Use type hints for function signatures: `def func(audio: np.ndarray, sr: int) -> np.ndarray:`
+- Write docstrings with Parameters and Returns sections
+- Use `pathlib.Path` for file path manipulation
+- Use f-strings for string formatting
+- Prefer `os.path.join()` or `Path` over string concatenation for paths
+
+### Imports
+- Group imports: standard library, third-party, local
+- Import specific functions when possible: `from scipy import signal`
+- Avoid wildcard imports: `from module import *`
+
+---
+
+## NumPy Best Practices - AVOID FOR LOOPS
+
+### Vectorization is Mandatory
+NEVER write for loops for array operations. Use NumPy vectorized operations instead.
+
+#### BAD - Using for loops:
+```python
+# DON'T DO THIS
+rms = []
+for i in range(0, len(audio) - n_fft, hop_length):
+    window = audio[i : i + n_fft]
+    rms_val = np.sqrt(np.mean(window**2))
+    rms.append(rms_val)
+```
+
+#### GOOD - Using NumPy vectorization:
+```python
+# DO THIS INSTEAD
+# Use stride_tricks or reshape for windowing
+def frame_signal(audio, frame_size, hop_size):
+    num_frames = 1 + (len(audio) - frame_size) // hop_size
+    indices = np.arange(frame_size)[None, :] + hop_size * np.arange(num_frames)[:, None]
+    return audio[indices]
+
+frames = frame_signal(audio, n_fft, hop_length)
+rms = np.sqrt(np.mean(frames**2, axis=1))
+energy = np.sum(frames**2, axis=1)
+```
+
+### Common Vectorization Patterns
+
+#### Element-wise operations
+```python
+# BAD
+result = []
+for x in array:
+    result.append(x * 2 + 1)
+
+# GOOD
+result = array * 2 + 1
+```
+
+#### Conditional operations
+```python
+# BAD
+for i in range(len(array)):
+    if array[i] < 0:
+        array[i] = 0
+
+# GOOD
+array = np.maximum(array, 0)
+# or
+array[array < 0] = 0
+# or
+array = np.where(array < 0, 0, array)
+```
+
+#### Aggregations over windows/frames
+```python
+# BAD
+means = []
+for i in range(0, len(data), window):
+    means.append(np.mean(data[i:i+window]))
+
+# GOOD
+reshaped = data[:len(data)//window * window].reshape(-1, window)
+means = reshaped.mean(axis=1)
+```
+
+#### Replace zeros with NaN
+```python
+# BAD
+for i in range(len(array)):
+    if array[i] == 0:
+        array[i] = np.nan
+
+# GOOD
+array[array == 0] = np.nan
+```
+
+### NumPy Functions to Use Instead of Loops
+- `np.sum()`, `np.mean()`, `np.std()` with `axis` parameter
+- `np.cumsum()`, `np.cumprod()` for cumulative operations
+- `np.diff()` for differences
+- `np.convolve()` for convolution/filtering
+- `np.correlate()` for correlation
+- `np.searchsorted()` for binary search
+- `np.unique()` for unique values
+- `np.where()` for conditional selection
+- `np.clip()` for bounding values
+- `np.interp()` for interpolation
+- Broadcasting for element-wise operations across different shapes
+
+### Memory Efficiency
+- Use `np.float32` instead of `np.float64` for audio (sufficient precision, half memory)
+- Use views instead of copies when possible: `array[::2]` creates a view
+- Use `out=` parameter to avoid allocating new arrays
+- Consider `np.lib.stride_tricks.as_strided` for advanced windowing (with caution)
+
+---
+
+## Libraries Reference
+
+### Preferred Libraries
+- **Audio I/O**: `soundfile` (fast, reliable)
+- **Resampling**: `scipy.signal.resample` (high-quality)
+- **Spectrograms**: `scipy.signal.spectrogram` or `librosa`
+- **Mel-Spectrogram**: `librosa.feature.melspectrogram`
+- **Pitch Detection**: `parselmouth` (Praat) or `pyworld`
+- **Plotting**: `matplotlib` with `librosa.display` for spectrograms
+
+### Avoid
+- `librosa.load()` for simple WAV files (use `soundfile` instead - faster)
+- Manual FFT implementations (use `scipy.fft` or `numpy.fft`)
+- PIL/Pillow for audio visualization (use matplotlib)
+

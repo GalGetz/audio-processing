@@ -46,11 +46,28 @@ def spectral_subtraction(
     
     # Create Hann window
     window = np.hanning(n_fft)
+
+    # -------------------------------------------------------------------------
+    # IMPORTANT: pad + "centered" framing to avoid boundary artifacts.
+    #
+    # Without padding, the first/last few samples are reconstructed from just a
+    # single Hann-windowed frame. Because Hann approaches 0 at the edges, the
+    # overlap-add normalization divides by a very small window_sum and can
+    # amplify a couple samples dramatically (the "spike at the end" seen in the
+    # plots).
+    #
+    # By padding n_fft//2 on both sides (librosa-style centered STFT) and then
+    # trimming back to the original length, the reconstructed boundary samples
+    # correspond to the *middle* of analysis windows, where the window power is
+    # well-behaved.
+    # -------------------------------------------------------------------------
+    pad = n_fft // 2
+    padded_audio = np.pad(noisy_audio, (pad, pad), mode="reflect")
     
     # Vectorized framing using advanced indexing
-    num_frames = 1 + (len(noisy_audio) - n_fft) // hop_length
+    num_frames = 1 + (len(padded_audio) - n_fft) // hop_length
     indices = np.arange(n_fft)[None, :] + hop_length * np.arange(num_frames)[:, None]
-    frames = noisy_audio[indices]
+    frames = padded_audio[indices]
     
     # Apply window to all frames (vectorized)
     windowed_frames = frames * window[None, :]
@@ -62,8 +79,19 @@ def spectral_subtraction(
     
     print(f"-> STFT computed: {num_frames} frames, {magnitude.shape[1]} frequency bins")
     
+    # Align the provided VAD mask to the padded framing.
+    #
+    # With pad=n_fft//2, the padded framing has exactly 2 extra frames (one at
+    # the very start and one at the very end) compared to the unpadded framing
+    # used by `compute_frame_energy`. The shift is +1 frame.
+    is_speech_padded = np.zeros(num_frames, dtype=bool)
+    if is_speech is not None and len(is_speech) > 0:
+        start = 1
+        end = min(start + len(is_speech), num_frames)
+        is_speech_padded[start:end] = is_speech[: end - start]
+
     # Initialize noise estimate from initial non-speech frames (vectorized)
-    noise_frames_idx = np.where(~is_speech[:min(50, num_frames)])[0]
+    noise_frames_idx = np.where(~is_speech_padded[:min(50, num_frames)])[0]
     if len(noise_frames_idx) > 0:
         noise_mag = np.mean(magnitude[noise_frames_idx], axis=0)
     else:
@@ -87,7 +115,7 @@ def spectral_subtraction(
     buf_pos = 0
 
     for t in range(num_frames):
-        if not is_speech[t]:
+        if not is_speech_padded[t]:
             mag_t = magnitude[t]
             if buf_count < n_buf:
                 noise_buf[buf_pos] = mag_t
@@ -144,12 +172,14 @@ def spectral_subtraction(
     np.add.at(enhanced_audio, flat_indices, flat_audio)
     np.add.at(window_sum, flat_indices, flat_window)
     
-    # Normalize by window sum (vectorized)
+    # Normalize by window sum (avoid boundary blow-ups)
+    # With the centered-padding above, window_sum is well-behaved over the region
+    # we keep after trimming. Still, guard against division by 0.
     window_sum = np.maximum(window_sum, 1e-8)
     enhanced_audio = enhanced_audio / window_sum
     
-    # Trim to original length
-    enhanced_audio = enhanced_audio[:len(noisy_audio)]
+    # Trim back to original length (remove the padding)
+    enhanced_audio = enhanced_audio[pad : pad + len(noisy_audio)]
     
     print(f"-> Overlap-add reconstruction complete: {len(enhanced_audio)} samples")
     

@@ -244,6 +244,13 @@ def apply_agc(
     # Trim to original length
     output = output[:len(audio)]
     
+    # Apply fade-in/fade-out to avoid edge spikes
+    fade_len = n_fft
+    fade_in = np.linspace(0, 1, fade_len)
+    fade_out = np.linspace(1, 0, fade_len)
+    output[:fade_len] *= fade_in
+    output[-fade_len:] *= fade_out
+    
     print(f"-> Applied AGC to {len(output)} samples")
     
     return output.astype(np.float32)

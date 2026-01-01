@@ -83,6 +83,7 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str, output_path: str
     # iii. Mel-Spectrogram (using librosa)
     # Match lecture typical range: 40-80 mel filters @ 16kHz (use 80 here)
     n_mels = 80
+    fmax = sr / 2
     
     # Calculate Mel Spectrogram using librosa
     S_mel = librosa.feature.melspectrogram(
@@ -91,18 +92,31 @@ def plot_audio_analysis(audio: np.ndarray, sr: int, title: str, output_path: str
         n_fft=n_fft,
         hop_length=hop_length,
         n_mels=n_mels,
+        fmax=fmax,
         window="hamming",
     )
     S_mel_db = librosa.power_to_db(S_mel, ref=np.max)
     
     # Plot using librosa's display helper
-    librosa.display.specshow(S_mel_db, sr=sr, hop_length=hop_length, 
-                             x_axis='time', y_axis='mel', ax=axes[2], cmap='viridis')
+    librosa.display.specshow(
+        S_mel_db,
+        sr=sr,
+        hop_length=hop_length,
+        x_axis='time',
+        y_axis='mel',
+        fmax=fmax,
+        ax=axes[2],
+        cmap='magma',
+    )
     axes[2].set_title(f"Mel-Spectrogram (librosa, {n_mels} mels)")
     axes[2].set_ylabel("Frequency [Hz] (Mel Scale)")
+    # Ensure the displayed range reaches Nyquist (e.g., 8000 Hz at 16kHz sampling rate).
+    axes[2].set_ylim(0, fmax)
+    # Force an explicit 8k tick so it matches expectations vs the linear spectrogram plot.
+    axes[2].set_yticks([0, 512, 1024, 2048, 4096, 8000] if int(fmax) == 8000 else None)
     
-    # iv. Energy and RMS (Vectorized - no for loops!)
-    # Create frames using vectorized indexing
+    # iv. Energy and RMS
+    # Create frames
     num_frames = 1 + (len(audio) - n_fft) // hop_length
     indices = np.arange(n_fft)[None, :] + hop_length * np.arange(num_frames)[:, None]
     frames = audio[indices]

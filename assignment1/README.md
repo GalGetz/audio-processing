@@ -106,8 +106,9 @@ assignment1/
 **Missing Timeframes in Pitch Contour**
 
 Some timeframes may be missing (gaps in the cyan line) because:
-- The signal in those frames is **unvoiced** (silence or fricatives like /s/, /f/).
+- The signal in those frames is **unvoiced** (silence or fricatives like /s/, /f/ and more).
 - The pitch detection algorithm did not find a strong enough periodic component.
+- and silences (or background noises) of course
 
 ---
 
@@ -115,11 +116,12 @@ Some timeframes may be missing (gaps in the cyan line) because:
 
 **Which downsampling method is better?**
 
-The `scipy.signal.resample` version is superior.
+They are almost identical (to human), but The `scipy.signal.resample` version is superior.
+In the assignment we were asked to compare 1b but we assumed that you refered to 1c, cause you mentioned `both` audios.
 
 **Why?**
-- **Aliasing:** Naive decimation (taking every 2nd sample) violates Nyquist if the signal has frequencies above 8kHz. These fold back as distortion.
-- **Anti-aliasing:** `scipy.signal.resample` uses an FFT-based approach that effectively prevents aliasing.
+- **Aliasing:** Naive decimation (taking every 2nd sample) violates Nyquist if the signal has frequencies above 8kHz. These fold back as distortion. but it's not so signifacnt cause just 0.09% energy above 8kHz, meaning there is not much content to cause aliasing artifacts.
+- **protecting from aliasing:** `scipy.signal.resample` uses an FFT-based approach that effectively prevents aliasing.
 
 **Parameter choices:**
 - **Spectrogram/STFT window:** Hamming

@@ -1,4 +1,4 @@
-Gal Getz
-Shoham Mazuz
-Shir Reshkovits
-Omer Ventura
+Gal Getz\n
+Shoham Mazuz\n
+Shir Reshkovits\n
+Omer Ventura\n

@@ -1,0 +1,123 @@
+============================================================
+ASSIGNMENT 1: Audio Processing
+============================================================
+
+------------------------------------------------------------
+PART 1: Audio Loading, Resampling, and Visualization
+------------------------------------------------------------
+--- Part 1.a: Loading Audio ---
+-> Detected multi-channel audio with 2 channels.
+-> Converted to mono (kept first channel).
+-> Native Sampling Frequency: 44100 Hz
+-> Trimmed audio from 10.28s to 10.00s.
+
+--- Part 1.b: Resampling to 32kHz ---
+-> Resampled from 44100 Hz to 32000 Hz.
+-> New number of samples: 320000
+
+--- Part 1.c: Downsampling to 16kHz ---
+-> Method 1 (Naive): 160000 samples.
+-> Method 2 (Resample): 160000 samples.
+
+--- Part 1.d: Generating plots for 'Naive Downsampling (16kHz)' ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part1/analysis_naive_downsampling.png
+
+--- Part 1.d: Generating plots for 'Scipy Resample (16kHz)' ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part1/analysis_scipy_resample.png
+
+-> Saved 16kHz audio files to outputs/part1/
+Original Audio: 44100 Hz, 441000 samples
+Resampled Audio (1.b): 32000 Hz, 320000 samples
+
+============================================================
+PART 2: Adding Noise
+============================================================
+
+--- Part 2.a: Loading and Resampling Noise ---
+-> Noise native sampling rate: 32000 Hz
+-> Noise duration: 20.00s (640000 samples)
+-> Resampled noise from 32000 Hz to 16000 Hz.
+-> New noise length: 320000 samples
+
+--- Part 2.b: Adding Noise to Audio ---
+-> Noise (320000) longer than audio (160000). Truncating noise.
+-> Final length: 160000 samples
+
+--- Part 2.c: Plotting Audio, Noise, and Noisy Signals ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part2/part2_noise_addition.png
+
+-> Saved noisy audio to: outputs/part2/audio_noisy.wav
+
+============================================================
+PART 3: Spectral Subtraction
+============================================================
+-> VAD: 599 speech frames, 400 noise frames
+
+--- Part 3.a: Plotting VAD Threshold ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part3/part3_vad_threshold.png
+
+--- Part 3.b: Spectral Subtraction ---
+-> STFT computed: 1001 frames, 161 frequency bins
+-> Initialized noise estimate from 33 noise frames
+-> Sequential noise estimation complete
+-> Spectral subtraction applied to 1001 frames
+-> Overlap-add reconstruction complete: 160000 samples
+
+-> Saved enhanced audio to: outputs/part3/audio_enhanced.wav
+
+--- Part 1.d: Generating plots for 'Enhanced (Spectral Subtraction)' ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part3/analysis_enhanced.png
+
+============================================================
+PART 4: Auto Gain Control (AGC)
+============================================================
+
+--- Part 4.a.i & 4.a.ii: Computing RMS and AGC Parameters ---
+-> Desired RMS (target): -40.06 dB
+-> Noise floor threshold: -61.50 dB
+
+--- Part 4.a.iii: Computing AGC Gains ---
+-> Computed gains for 999 frames
+-> Gain range: 0.30 dB to 13.11 dB
+
+--- Part 4.a.iii: Applying AGC Gains ---
+-> Applied AGC to 160000 samples
+
+--- Part 4.a.iv: Applying Soft Clipping ---
+-> Max amplitude before clipping: 121.4754
+-> Max amplitude after clipping: 1.3130
+
+-> Saved AGC audio to: outputs/part4/audio_agc.wav
+
+--- Part 1.d: Generating plots for 'AGC Output (16kHz)' ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part4/analysis_agc_output.png
+
+--- Part 4.a.vi: Plotting AGC Gains ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part4/part4_agc_gains.png
+
+============================================================
+PART 5: Time-Stretching (x1.5) with Phase Vocoder
+============================================================
+
+--- Part 5: Time-Stretching (x1.5) with Phase Vocoder ---
+-> Window: 40.0ms (640 samples), Hop: 10.0ms (160 samples)
+-> Overlap: 75%
+-> Applying STFT...
+-> Input STFT shape: (997, 321)
+-> Applying phase vocoder (rate=1.5)...
+-> Output STFT shape: (665, 321)
+-> Applying iSTFT...
+-> Original length: 160000 samples (10.00s)
+-> Stretched length: 106666 samples (6.67s)
+-> Applied RMS normalization (gain adjustment: x1.42)
+
+-> Saved time-stretched audio to: outputs/part5/audio_speedx1p5.wav
+
+--- Part 5.a.v: Plotting Time-Stretch Comparison ---
+-> Saved plot to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs/part5/part5_time_stretch.png
+
+============================================================
+Assignment 1 Complete!
+All outputs saved to: /Users/galge/Desktop/personal/TAU/audio-projects/assignment-1/assignment1/outputs
+============================================================
+

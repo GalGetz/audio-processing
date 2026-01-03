@@ -2,7 +2,7 @@ Gal Getz
 
 Shoham Mazuz
 
-Shir Reshkovits
+Shir Rashkovits
 
 Omer Ventura
 
